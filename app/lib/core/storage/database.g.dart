@@ -624,6 +624,18 @@ class $FocusSessionsTable extends FocusSessions
         type: DriftSqlType.int,
         requiredDuringInsert: true,
       ).withConverter<SessionStatus>($FocusSessionsTable.$converterstatus);
+  @override
+  late final GeneratedColumnWithTypeConverter<StrictnessLevel, int> strictness =
+      GeneratedColumn<int>(
+        'strictness',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1),
+      ).withConverter<StrictnessLevel>(
+        $FocusSessionsTable.$converterstrictness,
+      );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -645,6 +657,7 @@ class $FocusSessionsTable extends FocusSessions
     plannedDurationMinutes,
     goalText,
     status,
+    strictness,
     updatedAt,
   ];
   @override
@@ -758,6 +771,12 @@ class $FocusSessionsTable extends FocusSessions
           data['${effectivePrefix}status'],
         )!,
       ),
+      strictness: $FocusSessionsTable.$converterstrictness.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}strictness'],
+        )!,
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -772,6 +791,8 @@ class $FocusSessionsTable extends FocusSessions
 
   static JsonTypeConverter2<SessionStatus, int, int> $converterstatus =
       const EnumIndexConverter<SessionStatus>(SessionStatus.values);
+  static JsonTypeConverter2<StrictnessLevel, int, int> $converterstrictness =
+      const EnumIndexConverter<StrictnessLevel>(StrictnessLevel.values);
 }
 
 class FocusSession extends DataClass implements Insertable<FocusSession> {
@@ -786,6 +807,11 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
   final int plannedDurationMinutes;
   final String goalText;
   final SessionStatus status;
+
+  /// Snapshot přísnosti z profilu — určuje délku zpomalení ve Friction Exit
+  /// (docs/spec.md §5.5). Snapshot ze stejného důvodu jako u délky a cíle:
+  /// úprava profilu uprostřed běžícího bloku nesmí měnit jeho pravidla.
+  final StrictnessLevel strictness;
   final DateTime updatedAt;
   const FocusSession({
     required this.id,
@@ -796,6 +822,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
     required this.plannedDurationMinutes,
     required this.goalText,
     required this.status,
+    required this.strictness,
     required this.updatedAt,
   });
   @override
@@ -817,6 +844,11 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
         $FocusSessionsTable.$converterstatus.toSql(status),
       );
     }
+    {
+      map['strictness'] = Variable<int>(
+        $FocusSessionsTable.$converterstrictness.toSql(strictness),
+      );
+    }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -835,6 +867,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
       plannedDurationMinutes: Value(plannedDurationMinutes),
       goalText: Value(goalText),
       status: Value(status),
+      strictness: Value(strictness),
       updatedAt: Value(updatedAt),
     );
   }
@@ -857,6 +890,9 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
       status: $FocusSessionsTable.$converterstatus.fromJson(
         serializer.fromJson<int>(json['status']),
       ),
+      strictness: $FocusSessionsTable.$converterstrictness.fromJson(
+        serializer.fromJson<int>(json['strictness']),
+      ),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -874,6 +910,9 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
       'status': serializer.toJson<int>(
         $FocusSessionsTable.$converterstatus.toJson(status),
       ),
+      'strictness': serializer.toJson<int>(
+        $FocusSessionsTable.$converterstrictness.toJson(strictness),
+      ),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -887,6 +926,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
     int? plannedDurationMinutes,
     String? goalText,
     SessionStatus? status,
+    StrictnessLevel? strictness,
     DateTime? updatedAt,
   }) => FocusSession(
     id: id ?? this.id,
@@ -898,6 +938,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
         plannedDurationMinutes ?? this.plannedDurationMinutes,
     goalText: goalText ?? this.goalText,
     status: status ?? this.status,
+    strictness: strictness ?? this.strictness,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   FocusSession copyWithCompanion(FocusSessionsCompanion data) {
@@ -912,6 +953,9 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
           : this.plannedDurationMinutes,
       goalText: data.goalText.present ? data.goalText.value : this.goalText,
       status: data.status.present ? data.status.value : this.status,
+      strictness: data.strictness.present
+          ? data.strictness.value
+          : this.strictness,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -927,6 +971,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
           ..write('plannedDurationMinutes: $plannedDurationMinutes, ')
           ..write('goalText: $goalText, ')
           ..write('status: $status, ')
+          ..write('strictness: $strictness, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -942,6 +987,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
     plannedDurationMinutes,
     goalText,
     status,
+    strictness,
     updatedAt,
   );
   @override
@@ -956,6 +1002,7 @@ class FocusSession extends DataClass implements Insertable<FocusSession> {
           other.plannedDurationMinutes == this.plannedDurationMinutes &&
           other.goalText == this.goalText &&
           other.status == this.status &&
+          other.strictness == this.strictness &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -968,6 +1015,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
   final Value<int> plannedDurationMinutes;
   final Value<String> goalText;
   final Value<SessionStatus> status;
+  final Value<StrictnessLevel> strictness;
   final Value<DateTime> updatedAt;
   const FocusSessionsCompanion({
     this.id = const Value.absent(),
@@ -978,6 +1026,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
     this.plannedDurationMinutes = const Value.absent(),
     this.goalText = const Value.absent(),
     this.status = const Value.absent(),
+    this.strictness = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
   FocusSessionsCompanion.insert({
@@ -989,6 +1038,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
     required int plannedDurationMinutes,
     this.goalText = const Value.absent(),
     required SessionStatus status,
+    this.strictness = const Value.absent(),
     required DateTime updatedAt,
   }) : profileId = Value(profileId),
        startedAt = Value(startedAt),
@@ -1004,6 +1054,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
     Expression<int>? plannedDurationMinutes,
     Expression<String>? goalText,
     Expression<int>? status,
+    Expression<int>? strictness,
     Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
@@ -1016,6 +1067,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
         'planned_duration_minutes': plannedDurationMinutes,
       if (goalText != null) 'goal_text': goalText,
       if (status != null) 'status': status,
+      if (strictness != null) 'strictness': strictness,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
@@ -1029,6 +1081,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
     Value<int>? plannedDurationMinutes,
     Value<String>? goalText,
     Value<SessionStatus>? status,
+    Value<StrictnessLevel>? strictness,
     Value<DateTime>? updatedAt,
   }) {
     return FocusSessionsCompanion(
@@ -1041,6 +1094,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
           plannedDurationMinutes ?? this.plannedDurationMinutes,
       goalText: goalText ?? this.goalText,
       status: status ?? this.status,
+      strictness: strictness ?? this.strictness,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -1076,6 +1130,11 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
         $FocusSessionsTable.$converterstatus.toSql(status.value),
       );
     }
+    if (strictness.present) {
+      map['strictness'] = Variable<int>(
+        $FocusSessionsTable.$converterstrictness.toSql(strictness.value),
+      );
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -1093,6 +1152,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSession> {
           ..write('plannedDurationMinutes: $plannedDurationMinutes, ')
           ..write('goalText: $goalText, ')
           ..write('status: $status, ')
+          ..write('strictness: $strictness, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -1987,6 +2047,442 @@ class ProfileBlockedListsCompanion extends UpdateCompanion<ProfileBlockedList> {
   }
 }
 
+class $FrictionExitEventsTable extends FrictionExitEvents
+    with TableInfo<$FrictionExitEventsTable, FrictionExitEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FrictionExitEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<int> sessionId = GeneratedColumn<int>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES focus_sessions (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _triggeredAtMeta = const VerificationMeta(
+    'triggeredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> triggeredAt = GeneratedColumn<DateTime>(
+    'triggered_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<FrictionStep, int> stepType =
+      GeneratedColumn<int>(
+        'step_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<FrictionStep>(
+        $FrictionExitEventsTable.$converterstepType,
+      );
+  static const VerificationMeta _reflectionTextMeta = const VerificationMeta(
+    'reflectionText',
+  );
+  @override
+  late final GeneratedColumn<String> reflectionText = GeneratedColumn<String>(
+    'reflection_text',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<FrictionOutcome, int> outcome =
+      GeneratedColumn<int>(
+        'outcome',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<FrictionOutcome>(
+        $FrictionExitEventsTable.$converteroutcome,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    triggeredAt,
+    stepType,
+    reflectionText,
+    outcome,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'friction_exit_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FrictionExitEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('triggered_at')) {
+      context.handle(
+        _triggeredAtMeta,
+        triggeredAt.isAcceptableOrUnknown(
+          data['triggered_at']!,
+          _triggeredAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_triggeredAtMeta);
+    }
+    if (data.containsKey('reflection_text')) {
+      context.handle(
+        _reflectionTextMeta,
+        reflectionText.isAcceptableOrUnknown(
+          data['reflection_text']!,
+          _reflectionTextMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FrictionExitEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FrictionExitEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}session_id'],
+      )!,
+      triggeredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}triggered_at'],
+      )!,
+      stepType: $FrictionExitEventsTable.$converterstepType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}step_type'],
+        )!,
+      ),
+      reflectionText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reflection_text'],
+      ),
+      outcome: $FrictionExitEventsTable.$converteroutcome.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}outcome'],
+        )!,
+      ),
+    );
+  }
+
+  @override
+  $FrictionExitEventsTable createAlias(String alias) {
+    return $FrictionExitEventsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<FrictionStep, int, int> $converterstepType =
+      const EnumIndexConverter<FrictionStep>(FrictionStep.values);
+  static JsonTypeConverter2<FrictionOutcome, int, int> $converteroutcome =
+      const EnumIndexConverter<FrictionOutcome>(FrictionOutcome.values);
+}
+
+class FrictionExitEvent extends DataClass
+    implements Insertable<FrictionExitEvent> {
+  final int id;
+  final int sessionId;
+  final DateTime triggeredAt;
+  final FrictionStep stepType;
+  final String? reflectionText;
+  final FrictionOutcome outcome;
+  const FrictionExitEvent({
+    required this.id,
+    required this.sessionId,
+    required this.triggeredAt,
+    required this.stepType,
+    this.reflectionText,
+    required this.outcome,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['session_id'] = Variable<int>(sessionId);
+    map['triggered_at'] = Variable<DateTime>(triggeredAt);
+    {
+      map['step_type'] = Variable<int>(
+        $FrictionExitEventsTable.$converterstepType.toSql(stepType),
+      );
+    }
+    if (!nullToAbsent || reflectionText != null) {
+      map['reflection_text'] = Variable<String>(reflectionText);
+    }
+    {
+      map['outcome'] = Variable<int>(
+        $FrictionExitEventsTable.$converteroutcome.toSql(outcome),
+      );
+    }
+    return map;
+  }
+
+  FrictionExitEventsCompanion toCompanion(bool nullToAbsent) {
+    return FrictionExitEventsCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      triggeredAt: Value(triggeredAt),
+      stepType: Value(stepType),
+      reflectionText: reflectionText == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reflectionText),
+      outcome: Value(outcome),
+    );
+  }
+
+  factory FrictionExitEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FrictionExitEvent(
+      id: serializer.fromJson<int>(json['id']),
+      sessionId: serializer.fromJson<int>(json['sessionId']),
+      triggeredAt: serializer.fromJson<DateTime>(json['triggeredAt']),
+      stepType: $FrictionExitEventsTable.$converterstepType.fromJson(
+        serializer.fromJson<int>(json['stepType']),
+      ),
+      reflectionText: serializer.fromJson<String?>(json['reflectionText']),
+      outcome: $FrictionExitEventsTable.$converteroutcome.fromJson(
+        serializer.fromJson<int>(json['outcome']),
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'sessionId': serializer.toJson<int>(sessionId),
+      'triggeredAt': serializer.toJson<DateTime>(triggeredAt),
+      'stepType': serializer.toJson<int>(
+        $FrictionExitEventsTable.$converterstepType.toJson(stepType),
+      ),
+      'reflectionText': serializer.toJson<String?>(reflectionText),
+      'outcome': serializer.toJson<int>(
+        $FrictionExitEventsTable.$converteroutcome.toJson(outcome),
+      ),
+    };
+  }
+
+  FrictionExitEvent copyWith({
+    int? id,
+    int? sessionId,
+    DateTime? triggeredAt,
+    FrictionStep? stepType,
+    Value<String?> reflectionText = const Value.absent(),
+    FrictionOutcome? outcome,
+  }) => FrictionExitEvent(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    triggeredAt: triggeredAt ?? this.triggeredAt,
+    stepType: stepType ?? this.stepType,
+    reflectionText: reflectionText.present
+        ? reflectionText.value
+        : this.reflectionText,
+    outcome: outcome ?? this.outcome,
+  );
+  FrictionExitEvent copyWithCompanion(FrictionExitEventsCompanion data) {
+    return FrictionExitEvent(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      triggeredAt: data.triggeredAt.present
+          ? data.triggeredAt.value
+          : this.triggeredAt,
+      stepType: data.stepType.present ? data.stepType.value : this.stepType,
+      reflectionText: data.reflectionText.present
+          ? data.reflectionText.value
+          : this.reflectionText,
+      outcome: data.outcome.present ? data.outcome.value : this.outcome,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FrictionExitEvent(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('triggeredAt: $triggeredAt, ')
+          ..write('stepType: $stepType, ')
+          ..write('reflectionText: $reflectionText, ')
+          ..write('outcome: $outcome')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    sessionId,
+    triggeredAt,
+    stepType,
+    reflectionText,
+    outcome,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FrictionExitEvent &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.triggeredAt == this.triggeredAt &&
+          other.stepType == this.stepType &&
+          other.reflectionText == this.reflectionText &&
+          other.outcome == this.outcome);
+}
+
+class FrictionExitEventsCompanion extends UpdateCompanion<FrictionExitEvent> {
+  final Value<int> id;
+  final Value<int> sessionId;
+  final Value<DateTime> triggeredAt;
+  final Value<FrictionStep> stepType;
+  final Value<String?> reflectionText;
+  final Value<FrictionOutcome> outcome;
+  const FrictionExitEventsCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.triggeredAt = const Value.absent(),
+    this.stepType = const Value.absent(),
+    this.reflectionText = const Value.absent(),
+    this.outcome = const Value.absent(),
+  });
+  FrictionExitEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required int sessionId,
+    required DateTime triggeredAt,
+    required FrictionStep stepType,
+    this.reflectionText = const Value.absent(),
+    required FrictionOutcome outcome,
+  }) : sessionId = Value(sessionId),
+       triggeredAt = Value(triggeredAt),
+       stepType = Value(stepType),
+       outcome = Value(outcome);
+  static Insertable<FrictionExitEvent> custom({
+    Expression<int>? id,
+    Expression<int>? sessionId,
+    Expression<DateTime>? triggeredAt,
+    Expression<int>? stepType,
+    Expression<String>? reflectionText,
+    Expression<int>? outcome,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (triggeredAt != null) 'triggered_at': triggeredAt,
+      if (stepType != null) 'step_type': stepType,
+      if (reflectionText != null) 'reflection_text': reflectionText,
+      if (outcome != null) 'outcome': outcome,
+    });
+  }
+
+  FrictionExitEventsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? sessionId,
+    Value<DateTime>? triggeredAt,
+    Value<FrictionStep>? stepType,
+    Value<String?>? reflectionText,
+    Value<FrictionOutcome>? outcome,
+  }) {
+    return FrictionExitEventsCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      triggeredAt: triggeredAt ?? this.triggeredAt,
+      stepType: stepType ?? this.stepType,
+      reflectionText: reflectionText ?? this.reflectionText,
+      outcome: outcome ?? this.outcome,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<int>(sessionId.value);
+    }
+    if (triggeredAt.present) {
+      map['triggered_at'] = Variable<DateTime>(triggeredAt.value);
+    }
+    if (stepType.present) {
+      map['step_type'] = Variable<int>(
+        $FrictionExitEventsTable.$converterstepType.toSql(stepType.value),
+      );
+    }
+    if (reflectionText.present) {
+      map['reflection_text'] = Variable<String>(reflectionText.value);
+    }
+    if (outcome.present) {
+      map['outcome'] = Variable<int>(
+        $FrictionExitEventsTable.$converteroutcome.toSql(outcome.value),
+      );
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FrictionExitEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('triggeredAt: $triggeredAt, ')
+          ..write('stepType: $stepType, ')
+          ..write('reflectionText: $reflectionText, ')
+          ..write('outcome: $outcome')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1998,6 +2494,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BlockedAppsTable blockedApps = $BlockedAppsTable(this);
   late final $ProfileBlockedListsTable profileBlockedLists =
       $ProfileBlockedListsTable(this);
+  late final $FrictionExitEventsTable frictionExitEvents =
+      $FrictionExitEventsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2008,6 +2506,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     blockedAppLists,
     blockedApps,
     profileBlockedLists,
+    frictionExitEvents,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2038,6 +2537,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('profile_blocked_lists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'focus_sessions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('friction_exit_events', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -2522,6 +3028,7 @@ typedef $$FocusSessionsTableCreateCompanionBuilder =
       required int plannedDurationMinutes,
       Value<String> goalText,
       required SessionStatus status,
+      Value<StrictnessLevel> strictness,
       required DateTime updatedAt,
     });
 typedef $$FocusSessionsTableUpdateCompanionBuilder =
@@ -2534,6 +3041,7 @@ typedef $$FocusSessionsTableUpdateCompanionBuilder =
       Value<int> plannedDurationMinutes,
       Value<String> goalText,
       Value<SessionStatus> status,
+      Value<StrictnessLevel> strictness,
       Value<DateTime> updatedAt,
     });
 
@@ -2560,6 +3068,27 @@ final class $$FocusSessionsTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$FrictionExitEventsTable, List<FrictionExitEvent>>
+  _frictionExitEventsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.frictionExitEvents,
+        aliasName: 'focus_sessions__id__friction_exit_events__session_id',
+      );
+
+  $$FrictionExitEventsTableProcessedTableManager get frictionExitEventsRefs {
+    final manager = $$FrictionExitEventsTableTableManager(
+      $_db,
+      $_db.frictionExitEvents,
+    ).filter((f) => f.sessionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _frictionExitEventsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
@@ -2609,6 +3138,12 @@ class $$FocusSessionsTableFilterComposer
     builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
+  ColumnWithTypeConverterFilters<StrictnessLevel, StrictnessLevel, int>
+  get strictness => $composableBuilder(
+    column: $table.strictness,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
@@ -2635,6 +3170,31 @@ class $$FocusSessionsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> frictionExitEventsRefs(
+    Expression<bool> Function($$FrictionExitEventsTableFilterComposer f) f,
+  ) {
+    final $$FrictionExitEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.frictionExitEvents,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FrictionExitEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.frictionExitEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -2679,6 +3239,11 @@ class $$FocusSessionsTableOrderingComposer
 
   ColumnOrderings<int> get status => $composableBuilder(
     column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get strictness => $composableBuilder(
+    column: $table.strictness,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2743,6 +3308,12 @@ class $$FocusSessionsTableAnnotationComposer
   GeneratedColumnWithTypeConverter<SessionStatus, int> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
+  GeneratedColumnWithTypeConverter<StrictnessLevel, int> get strictness =>
+      $composableBuilder(
+        column: $table.strictness,
+        builder: (column) => column,
+      );
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
@@ -2768,6 +3339,32 @@ class $$FocusSessionsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> frictionExitEventsRefs<T extends Object>(
+    Expression<T> Function($$FrictionExitEventsTableAnnotationComposer a) f,
+  ) {
+    final $$FrictionExitEventsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.frictionExitEvents,
+          getReferencedColumn: (t) => t.sessionId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$FrictionExitEventsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.frictionExitEvents,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$FocusSessionsTableTableManager
@@ -2783,7 +3380,7 @@ class $$FocusSessionsTableTableManager
           $$FocusSessionsTableUpdateCompanionBuilder,
           (FocusSession, $$FocusSessionsTableReferences),
           FocusSession,
-          PrefetchHooks Function({bool profileId})
+          PrefetchHooks Function({bool profileId, bool frictionExitEventsRefs})
         > {
   $$FocusSessionsTableTableManager(_$AppDatabase db, $FocusSessionsTable table)
     : super(
@@ -2806,6 +3403,7 @@ class $$FocusSessionsTableTableManager
                 Value<int> plannedDurationMinutes = const Value.absent(),
                 Value<String> goalText = const Value.absent(),
                 Value<SessionStatus> status = const Value.absent(),
+                Value<StrictnessLevel> strictness = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => FocusSessionsCompanion(
                 id: id,
@@ -2816,6 +3414,7 @@ class $$FocusSessionsTableTableManager
                 plannedDurationMinutes: plannedDurationMinutes,
                 goalText: goalText,
                 status: status,
+                strictness: strictness,
                 updatedAt: updatedAt,
               ),
           createCompanionCallback:
@@ -2828,6 +3427,7 @@ class $$FocusSessionsTableTableManager
                 required int plannedDurationMinutes,
                 Value<String> goalText = const Value.absent(),
                 required SessionStatus status,
+                Value<StrictnessLevel> strictness = const Value.absent(),
                 required DateTime updatedAt,
               }) => FocusSessionsCompanion.insert(
                 id: id,
@@ -2838,6 +3438,7 @@ class $$FocusSessionsTableTableManager
                 plannedDurationMinutes: plannedDurationMinutes,
                 goalText: goalText,
                 status: status,
+                strictness: strictness,
                 updatedAt: updatedAt,
               ),
           withReferenceMapper: (p0) => p0
@@ -2848,47 +3449,74 @@ class $$FocusSessionsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({profileId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (profileId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.profileId,
-                                referencedTable: $$FocusSessionsTableReferences
-                                    ._profileIdTable(db),
-                                referencedColumn: $$FocusSessionsTableReferences
-                                    ._profileIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({profileId = false, frictionExitEventsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (frictionExitEventsRefs) db.frictionExitEvents,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (profileId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.profileId,
+                                    referencedTable:
+                                        $$FocusSessionsTableReferences
+                                            ._profileIdTable(db),
+                                    referencedColumn:
+                                        $$FocusSessionsTableReferences
+                                            ._profileIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (frictionExitEventsRefs)
+                        await $_getPrefetchedData<
+                          FocusSession,
+                          $FocusSessionsTable,
+                          FrictionExitEvent
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FocusSessionsTableReferences
+                              ._frictionExitEventsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FocusSessionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).frictionExitEventsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sessionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2905,7 +3533,7 @@ typedef $$FocusSessionsTableProcessedTableManager =
       $$FocusSessionsTableUpdateCompanionBuilder,
       (FocusSession, $$FocusSessionsTableReferences),
       FocusSession,
-      PrefetchHooks Function({bool profileId})
+      PrefetchHooks Function({bool profileId, bool frictionExitEventsRefs})
     >;
 typedef $$BlockedAppListsTableCreateCompanionBuilder =
     BlockedAppListsCompanion Function({
@@ -3981,6 +4609,359 @@ typedef $$ProfileBlockedListsTableProcessedTableManager =
       ProfileBlockedList,
       PrefetchHooks Function({bool profileId, bool listId})
     >;
+typedef $$FrictionExitEventsTableCreateCompanionBuilder =
+    FrictionExitEventsCompanion Function({
+      Value<int> id,
+      required int sessionId,
+      required DateTime triggeredAt,
+      required FrictionStep stepType,
+      Value<String?> reflectionText,
+      required FrictionOutcome outcome,
+    });
+typedef $$FrictionExitEventsTableUpdateCompanionBuilder =
+    FrictionExitEventsCompanion Function({
+      Value<int> id,
+      Value<int> sessionId,
+      Value<DateTime> triggeredAt,
+      Value<FrictionStep> stepType,
+      Value<String?> reflectionText,
+      Value<FrictionOutcome> outcome,
+    });
+
+final class $$FrictionExitEventsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $FrictionExitEventsTable,
+          FrictionExitEvent
+        > {
+  $$FrictionExitEventsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $FocusSessionsTable _sessionIdTable(_$AppDatabase db) => db
+      .focusSessions
+      .createAlias('friction_exit_events__session_id__focus_sessions__id');
+
+  $$FocusSessionsTableProcessedTableManager get sessionId {
+    final $_column = $_itemColumn<int>('session_id')!;
+
+    final manager = $$FocusSessionsTableTableManager(
+      $_db,
+      $_db.focusSessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$FrictionExitEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $FrictionExitEventsTable> {
+  $$FrictionExitEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get triggeredAt => $composableBuilder(
+    column: $table.triggeredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<FrictionStep, FrictionStep, int>
+  get stepType => $composableBuilder(
+    column: $table.stepType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get reflectionText => $composableBuilder(
+    column: $table.reflectionText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<FrictionOutcome, FrictionOutcome, int>
+  get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  $$FocusSessionsTableFilterComposer get sessionId {
+    final $$FocusSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.focusSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.focusSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FrictionExitEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FrictionExitEventsTable> {
+  $$FrictionExitEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get triggeredAt => $composableBuilder(
+    column: $table.triggeredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get stepType => $composableBuilder(
+    column: $table.stepType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reflectionText => $composableBuilder(
+    column: $table.reflectionText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$FocusSessionsTableOrderingComposer get sessionId {
+    final $$FocusSessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.focusSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusSessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.focusSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FrictionExitEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FrictionExitEventsTable> {
+  $$FrictionExitEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get triggeredAt => $composableBuilder(
+    column: $table.triggeredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<FrictionStep, int> get stepType =>
+      $composableBuilder(column: $table.stepType, builder: (column) => column);
+
+  GeneratedColumn<String> get reflectionText => $composableBuilder(
+    column: $table.reflectionText,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<FrictionOutcome, int> get outcome =>
+      $composableBuilder(column: $table.outcome, builder: (column) => column);
+
+  $$FocusSessionsTableAnnotationComposer get sessionId {
+    final $$FocusSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.focusSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.focusSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$FrictionExitEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FrictionExitEventsTable,
+          FrictionExitEvent,
+          $$FrictionExitEventsTableFilterComposer,
+          $$FrictionExitEventsTableOrderingComposer,
+          $$FrictionExitEventsTableAnnotationComposer,
+          $$FrictionExitEventsTableCreateCompanionBuilder,
+          $$FrictionExitEventsTableUpdateCompanionBuilder,
+          (FrictionExitEvent, $$FrictionExitEventsTableReferences),
+          FrictionExitEvent,
+          PrefetchHooks Function({bool sessionId})
+        > {
+  $$FrictionExitEventsTableTableManager(
+    _$AppDatabase db,
+    $FrictionExitEventsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FrictionExitEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FrictionExitEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FrictionExitEventsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> sessionId = const Value.absent(),
+                Value<DateTime> triggeredAt = const Value.absent(),
+                Value<FrictionStep> stepType = const Value.absent(),
+                Value<String?> reflectionText = const Value.absent(),
+                Value<FrictionOutcome> outcome = const Value.absent(),
+              }) => FrictionExitEventsCompanion(
+                id: id,
+                sessionId: sessionId,
+                triggeredAt: triggeredAt,
+                stepType: stepType,
+                reflectionText: reflectionText,
+                outcome: outcome,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int sessionId,
+                required DateTime triggeredAt,
+                required FrictionStep stepType,
+                Value<String?> reflectionText = const Value.absent(),
+                required FrictionOutcome outcome,
+              }) => FrictionExitEventsCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                triggeredAt: triggeredAt,
+                stepType: stepType,
+                reflectionText: reflectionText,
+                outcome: outcome,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$FrictionExitEventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sessionId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (sessionId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sessionId,
+                                referencedTable:
+                                    $$FrictionExitEventsTableReferences
+                                        ._sessionIdTable(db),
+                                referencedColumn:
+                                    $$FrictionExitEventsTableReferences
+                                        ._sessionIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$FrictionExitEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FrictionExitEventsTable,
+      FrictionExitEvent,
+      $$FrictionExitEventsTableFilterComposer,
+      $$FrictionExitEventsTableOrderingComposer,
+      $$FrictionExitEventsTableAnnotationComposer,
+      $$FrictionExitEventsTableCreateCompanionBuilder,
+      $$FrictionExitEventsTableUpdateCompanionBuilder,
+      (FrictionExitEvent, $$FrictionExitEventsTableReferences),
+      FrictionExitEvent,
+      PrefetchHooks Function({bool sessionId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3995,4 +4976,6 @@ class $AppDatabaseManager {
       $$BlockedAppsTableTableManager(_db, _db.blockedApps);
   $$ProfileBlockedListsTableTableManager get profileBlockedLists =>
       $$ProfileBlockedListsTableTableManager(_db, _db.profileBlockedLists);
+  $$FrictionExitEventsTableTableManager get frictionExitEvents =>
+      $$FrictionExitEventsTableTableManager(_db, _db.frictionExitEvents);
 }

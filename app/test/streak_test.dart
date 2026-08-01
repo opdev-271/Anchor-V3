@@ -18,6 +18,7 @@ FocusSession _session({
     plannedDurationMinutes: minutes,
     goalText: '',
     status: status,
+    strictness: StrictnessLevel.medium,
     updatedAt: startedAt,
   );
 }
@@ -134,6 +135,7 @@ void main() {
         plannedDurationMinutes: 50,
         goalText: '',
         status: SessionStatus.active,
+        strictness: StrictnessLevel.medium,
         updatedAt: today,
       );
       expect(focusedToday([running], now: today), const Duration(minutes: 20));

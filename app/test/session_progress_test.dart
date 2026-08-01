@@ -12,6 +12,7 @@ FocusSession _running(DateTime startedAt, int minutes) => FocusSession(
       plannedDurationMinutes: minutes,
       goalText: 'dokončit kapitolu 3',
       status: SessionStatus.active,
+      strictness: StrictnessLevel.medium,
       updatedAt: startedAt,
     );
 

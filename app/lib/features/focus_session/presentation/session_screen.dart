@@ -5,6 +5,7 @@ import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
+import '../../friction_exit/presentation/friction_exit_screen.dart';
 import '../application/focus_providers.dart';
 import '../domain/session_progress.dart';
 
@@ -177,30 +178,30 @@ class _ActiveView extends ConsumerWidget {
     );
   }
 
+  /// Otevře Friction Exit (docs/spec.md §5.5). Ukončení bloku prochází
+  /// **výhradně** tudy — jiná cesta ven ze session neexistuje, jinak by
+  /// zpomalení šlo obejít (akceptační kritérium §14).
   Future<void> _confirmExit(BuildContext context, WidgetRef ref) async {
-    // Sprint 3 tuto přímou otázku nahradí Friction Exit flow
-    // (dech / reflexe) dle docs/spec.md §5.5.
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Ukončit blok?'),
-        content: const Text(
-          'Blok se uloží jako přerušený. To je v pořádku — data slouží '
-          'jen k tomu, aby ses příště trefil/a lépe.',
+    final result = await Navigator.of(context).push<FrictionExitResult>(
+      MaterialPageRoute(
+        builder: (_) => FrictionExitScreen(
+          strictness: session.strictness,
+          goalText: session.goalText,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Pokračovat v práci'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Ukončit'),
-          ),
-        ],
       ),
     );
-    if (confirmed ?? false) {
+    // `null` = uživatel se vrátil k práci ještě před volbou kroku.
+    if (result == null) return;
+
+    final db = ref.read(databaseProvider);
+    await db.logFrictionExit(
+      sessionId: session.id,
+      stepType: result.step,
+      outcome: result.outcome,
+      reflectionText: result.reflectionText,
+    );
+
+    if (result.outcome == FrictionOutcome.ended) {
       await ref.read(sessionControllerProvider).interrupt(session);
     }
   }

@@ -46,7 +46,31 @@ class FocusSessions extends Table {
   TextColumn get goalText => text().withDefault(const Constant(''))();
 
   IntColumn get status => intEnum<SessionStatus>()();
+
+  /// Snapshot přísnosti z profilu — určuje délku zpomalení ve Friction Exit
+  /// (docs/spec.md §5.5). Snapshot ze stejného důvodu jako u délky a cíle:
+  /// úprava profilu uprostřed běžícího bloku nesmí měnit jeho pravidla.
+  IntColumn get strictness =>
+      intEnum<StrictnessLevel>().withDefault(const Constant(1))();
+
   DateTimeColumn get updatedAt => dateTime()();
+}
+
+/// Záznam o pokusu o předčasné ukončení (docs/data-model.md → FrictionExitEvent).
+///
+/// Loguje se **každý** pokus, i ten, po kterém se uživatel vrátil k práci —
+/// právě ta data ukazují, kdy a proč pozornost odchází, což je podklad pro
+/// statistiky v §5.6.
+class FrictionExitEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  IntColumn get sessionId =>
+      integer().references(FocusSessions, #id, onDelete: KeyAction.cascade)();
+
+  DateTimeColumn get triggeredAt => dateTime()();
+  IntColumn get stepType => intEnum<FrictionStep>()();
+  TextColumn get reflectionText => text().nullable()();
+  IntColumn get outcome => intEnum<FrictionOutcome>()();
 }
 
 /// Pojmenovaný seznam blokovaných aplikací, např. "Sociální sítě"

@@ -34,3 +34,26 @@ enum SessionStatus {
   /// — tón aplikace neobviňuje (docs/spec.md §11).
   interrupted,
 }
+
+/// Typ zpomalovacího kroku ve Friction Exit (docs/spec.md §5.5).
+///
+/// Pořadí hodnot je perzistované jako index — viz poznámka u [StrictnessLevel].
+enum FrictionStep {
+  /// Dýchací cvičení — nevyžaduje nic vymýšlet, jen počkat a dýchat.
+  breathing,
+
+  /// Napsání jedné věty o tom, proč chce uživatel skončit dřív.
+  reflection,
+}
+
+/// Jak Friction Exit dopadl.
+///
+/// Pořadí hodnot je perzistované jako index — viz poznámka u [StrictnessLevel].
+enum FrictionOutcome {
+  /// Uživatel se vrátil k práci.
+  resumed,
+
+  /// Uživatel blok ukončil. Tahle možnost je po zpomalení **vždy** dostupná
+  /// (docs/spec.md §5.5 a §11 — autonomii uživatele respektujeme).
+  ended,
+}

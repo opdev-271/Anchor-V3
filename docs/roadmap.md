@@ -22,8 +22,9 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 0 — Základy | ✅ hotovo (bez Firebase — viz poznámka níže) |
 | 1 — Fokus session jádro | ✅ hotovo |
 | 2 — Blokování appek (Android) | ✅ hotovo — viz [blocking-android.md](blocking-android.md) |
-| 3 — Friction Exit | ⏭️ další na řadě |
-| 4–10 | ⬜ neotevřeno |
+| 3 — Friction Exit | ✅ hotovo |
+| 4 — Statistiky | ⏭️ další na řadě |
+| 5–10 | ⬜ neotevřeno |
 
 **Firebase zatím není zapojený.** Vyžaduje projekt založený pod účtem uživatele
 (`google-services.json`). Sprinty 0 a 1 ho nepotřebují — aplikace je offline-first
@@ -66,12 +67,23 @@ Firebase Auth a cloud sync se doplní, až bude projekt k dispozici.
 - **Doporučení:** implementovat nejmenší funkční řez první (např. jeden pevný seznam, jedno
   API) a rozšiřovat iterativně — toto je sprint s nejvyšším rizikem platformních překvapení.
 
-## Sprint 3 — Friction Exit ([§5.5](spec.md#55-friction-exit--ztížený-způsob-předčasného-ukončení))
+## Sprint 3 — Friction Exit ([§5.5](spec.md#55-friction-exit--ztížený-způsob-předčasného-ukončení)) ✅
 
-- Flow při pokusu o předčasné ukončení: 30s dechové cvičení NEBO jedna reflexní věta.
-- Ukončení je po tomto kroku **vždy** umožněno — žádné hard-lockování (etický požadavek §11).
-- Log `FrictionExitEvent` pro pozdější statistiky.
-- **Permissions/API:** žádné — čistě UI/state flow.
+- Flow při pokusu o předčasné ukončení: dechové cvičení NEBO jedna reflexní věta —
+  uživatel si volí, což je samo o sobě první moment zastavení.
+- Délka zpomalení se řídí přísností profilu (mírná 15 s, střední 30 s dle zadání, přísná 45 s).
+  Editor profilu u přísné úrovně slibuje „delší zpomalení při ukončení", takže se to musí
+  reálně projevit. Horní hranice je držená nízko schválně — delší čekání by nezvyšovalo šanci
+  na návrat k práci, jen frustraci a pravděpodobnost odinstalace.
+- **Nelze obejít** (akceptační kritérium §14): během kroku je systémové „zpět" vypnuté přes
+  `PopScope` a tlačítko k ukončení do dokončení kroku vůbec neexistuje. Ukončení session
+  navíc vede **výhradně** přes tuto obrazovku — jiná cesta ven neexistuje.
+- **Ukončení je po zpomalení vždy umožněno** — žádná další podmínka ani přemlouvání (§11).
+- Odpočet dýchání běží na Flutter tickeru, ne na `Timer`u: ticker se zastaví, když aplikace
+  není v popředí, takže zpomalení znamená skutečnou přítomnost, ne odsunutou aplikaci.
+- Každý pokus se loguje jako `FrictionExitEvent` — včetně těch, po kterých se uživatel vrátil
+  k práci. Právě ta data ukážou, kdy a proč pozornost odchází (podklad pro §5.6).
+- **Permissions/API:** žádné — čistě UI a stav.
 
 ## Sprint 4 — Statistiky ([§5.6](spec.md#56-statistiky-a-zpětná-vazba))
 

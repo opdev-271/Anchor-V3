@@ -22,6 +22,7 @@ part 'database.g.dart';
     BlockedAppLists,
     BlockedApps,
     ProfileBlockedLists,
+    FrictionExitEvents,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -31,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -42,6 +43,13 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(blockedAppLists);
             await m.createTable(blockedApps);
             await m.createTable(profileBlockedLists);
+          }
+          if (from < 3) {
+            // Sprint 3 — Friction Exit (docs/spec.md §5.5).
+            await m.createTable(frictionExitEvents);
+            // Starší session přísnost neznají; výchozí `medium` odpovídá
+            // tomu, co nabízí editor profilu.
+            await m.addColumn(focusSessions, focusSessions.strictness);
           }
         },
         beforeOpen: (details) async {
@@ -141,9 +149,35 @@ class AppDatabase extends _$AppDatabase {
         plannedDurationMinutes: profile.durationMinutes,
         goalText: Value(profile.goalText),
         status: SessionStatus.active,
+        strictness: Value(profile.strictness),
         updatedAt: now,
       ),
     );
+  }
+
+  /// Zaznamená pokus o předčasné ukončení — dokončený i ten, po kterém se
+  /// uživatel vrátil zpět k práci.
+  Future<int> logFrictionExit({
+    required int sessionId,
+    required FrictionStep stepType,
+    required FrictionOutcome outcome,
+    String? reflectionText,
+  }) {
+    return into(frictionExitEvents).insert(
+      FrictionExitEventsCompanion.insert(
+        sessionId: sessionId,
+        triggeredAt: DateTime.now(),
+        stepType: stepType,
+        outcome: outcome,
+        reflectionText: Value(reflectionText),
+      ),
+    );
+  }
+
+  Stream<List<FrictionExitEvent>> watchFrictionEvents(int sessionId) {
+    return (select(frictionExitEvents)
+          ..where((t) => t.sessionId.equals(sessionId)))
+        .watch();
   }
 
   /// Uzavře session daným stavem. [endedAt] lze předat explicitně, aby session
