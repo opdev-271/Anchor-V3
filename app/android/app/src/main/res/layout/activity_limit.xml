@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Obrazovka vyčerpaného denního limitu aplikace.
+  Tón textů drží docs/spec.md §11 — konstatuje fakt, neobviňuje.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/kotva_deep_sea"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/ic_shield_anchor"
+            android:contentDescription="@string/limit_title" />
+
+        <TextView
+            android:id="@+id/limit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/limit_title"
+            android:textColor="@color/kotva_on_dark"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/limit_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/kotva_on_dark_muted"
+            android:textSize="16sp"
+            android:gravity="center" />
+
+        <!-- Sekce s kódem — viditelná jen u intenzity „opsat kód". -->
+        <LinearLayout
+            android:id="@+id/limit_code_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/limit_code_prompt"
+                android:textColor="@color/kotva_on_dark_muted"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/limit_code_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/kotva_on_dark"
+                android:textSize="32sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.3" />
+
+            <TextView
+                android:id="@+id/limit_code_entry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:minWidth="160dp"
+                android:textColor="@color/kotva_anchor_light"
+                android:textSize="28sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.3"
+                android:gravity="center" />
+
+            <GridLayout
+                android:id="@+id/limit_keypad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:columnCount="5" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/limit_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:minHeight="48dp"
+            android:text="@string/limit_close" />
+
+        <Button
+            android:id="@+id/limit_extend"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"
+            android:minHeight="48dp"
+            android:textColor="@color/kotva_on_dark_muted"
+            android:text="@string/limit_extend" />
+
+    </LinearLayout>
+</ScrollView>

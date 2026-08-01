@@ -23,6 +23,7 @@ part 'database.g.dart';
     BlockedApps,
     ProfileBlockedLists,
     FrictionExitEvents,
+    AppUsageLimits,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -32,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -50,6 +51,10 @@ class AppDatabase extends _$AppDatabase {
             // Starší session přísnost neznají; výchozí `medium` odpovídá
             // tomu, co nabízí editor profilu.
             await m.addColumn(focusSessions, focusSessions.strictness);
+          }
+          if (from < 4) {
+            // Revize Anchor-V1 — denní limity aplikací.
+            await m.createTable(appUsageLimits);
           }
         },
         beforeOpen: (details) async {
@@ -322,6 +327,39 @@ class AppDatabase extends _$AppDatabase {
       ..where(profileBlockedLists.profileId.equals(profileId));
     final rows = await query.get();
     return rows.map((r) => r.read(blockedApps.packageName)!).toList();
+  }
+
+  // --- Denní limity aplikací ---
+
+  Stream<List<AppUsageLimit>> watchAppLimits() {
+    return (select(appUsageLimits)
+          ..orderBy([(t) => OrderingTerm.asc(t.appLabel)]))
+        .watch();
+  }
+
+  Future<List<AppUsageLimit>> allAppLimits() => select(appUsageLimits).get();
+
+  Future<void> upsertAppLimit({
+    required String packageName,
+    required String appLabel,
+    required int dailyMinutes,
+    required LimitIntensity intensity,
+  }) {
+    return into(appUsageLimits).insertOnConflictUpdate(
+      AppUsageLimitsCompanion.insert(
+        packageName: packageName,
+        appLabel: appLabel,
+        dailyMinutes: dailyMinutes,
+        intensity: intensity,
+        updatedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<void> deleteAppLimit(String packageName) {
+    return (delete(appUsageLimits)
+          ..where((t) => t.packageName.equals(packageName)))
+        .go();
   }
 
   Stream<List<FocusSession>> watchRecentSessions({int limit = 20}) {

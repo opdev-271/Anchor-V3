@@ -43,4 +43,18 @@ abstract final class AppColors {
   /// Jediné legitimní použití červené: destruktivní akce uživatele
   /// (smazání dat dle §9), nikdy hodnocení jeho chování.
   static const destructive = Color(0xFFB3261E);
+
+  /// Přechod pro nosné plochy — hero karta na přehledu, prstenec odpočtu.
+  ///
+  /// Záměrně velmi mělký: dva blízké odstíny téže barvy. Výraznější přechod by
+  /// z klidné aplikace udělal reklamní banner.
+  static const gradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [deepSea, anchor],
+  );
+
+  /// Přechod prstence odpočtu — od hlubší k světlejší, aby bylo poznat,
+  /// kudy čas plyne.
+  static const progressGradient = [anchor, shallow];
 }

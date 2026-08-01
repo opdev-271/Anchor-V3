@@ -47,6 +47,10 @@ object InstalledApps {
             .toList()
     }
 
+    /** Čitelný název aplikace; při neznámém balíčku vrací jeho identifikátor. */
+    fun labelFor(context: Context, packageName: String): String =
+        loadLabel(context.packageManager, packageName)
+
     private fun loadLabel(pm: PackageManager, packageName: String): String = try {
         @Suppress("DEPRECATION")
         pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)).toString()

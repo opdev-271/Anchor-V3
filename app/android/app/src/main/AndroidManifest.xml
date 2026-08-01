@@ -44,6 +44,27 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <!-- Obrazovka po vyčerpání denního limitu aplikace. -->
+        <activity
+            android:name=".LimitReachedActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- Odebírá notifikace z aplikací s vyčerpaným limitem. Volitelné —
+             bez uděleného oprávnění limity fungují dál, jen notifikace chodí. -->
+        <service
+            android:name=".NotificationSuppressor"
+            android:exported="false"
+            android:label="@string/notification_service_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <!-- Blokovací služba (docs/spec.md §5.2). Oprávnění BIND_ACCESSIBILITY_SERVICE
              smí udělit jen systém; uživatel službu zapíná ručně v Nastavení. -->
         <service
@@ -86,6 +107,14 @@
         <intent>
             <action android:name="android.intent.action.MAIN"/>
             <category android:name="android.intent.category.LAUNCHER"/>
+        </intent>
+
+        <!-- Launcher (plocha) má MAIN + HOME, ne MAIN + LAUNCHER. Bez tohohle
+             se jeho název nepřeloží a v přehledu času svítí holý identifikátor
+             balíčku místo čitelného jména. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.HOME"/>
         </intent>
     </queries>
 </manifest>

@@ -65,7 +65,7 @@ cd app/android && ./gradlew --stop
 ```
 lib/
   core/
-    design_system/   motiv, barvy, rozestupy
+    design_system/   motiv, barvy, typografie, rozestupy, ScreenBody, ProgressRing
     storage/         drift databáze, tabulky, enumy
     czech_plural.dart  skloňování číslovek
   features/

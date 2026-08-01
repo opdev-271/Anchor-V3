@@ -35,6 +35,36 @@ enum SessionStatus {
   interrupted,
 }
 
+/// Intenzita vynucení denního limitu aplikace (revize Anchor-V1).
+///
+/// Pořadí hodnot se posílá jako index přes MethodChannel do `AppLimits.kt`
+/// a je perzistované — **nikdy nepřeskupovat**.
+enum LimitIntensity {
+  /// Zeptá se, jestli opravdu prodloužit; povolí 5 minut a pak se zeptá znovu.
+  ask,
+
+  /// Prodloužení navíc vyžaduje opsat kód na přeházené klávesnici.
+  code,
+
+  /// Bez prodloužení — do konce dne je aplikace zavřená.
+  hard;
+
+  String get label => switch (this) {
+        LimitIntensity.ask => 'Zeptat se',
+        LimitIntensity.code => 'Opsat kód',
+        LimitIntensity.hard => 'Bez výjimky',
+      };
+
+  String get description => switch (this) {
+        LimitIntensity.ask =>
+          'Po vyčerpání se Kotva zeptá a případně přidá 5 minut. Pak se zeptá znovu.',
+        LimitIntensity.code =>
+          'Prodloužení o 5 minut vyžaduje opsat kód na přeházené klávesnici.',
+        LimitIntensity.hard =>
+          'Žádné prodloužení. Do konce dne aplikace nepůjde použít.',
+      };
+}
+
 /// Typ zpomalovacího kroku ve Friction Exit (docs/spec.md §5.5).
 ///
 /// Pořadí hodnot je perzistované jako index — viz poznámka u [StrictnessLevel].

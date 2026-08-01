@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
+import '../../../core/design_system/progress_ring.dart';
+import '../../../core/design_system/screen_body.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
 import '../../friction_exit/presentation/friction_exit_screen.dart';
@@ -109,44 +111,27 @@ class _ActiveView extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) => onDone(session));
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+    return ScreenBody(
       child: Column(
         children: [
           const Spacer(),
-          SizedBox(
-            width: 260,
-            height: 260,
-            child: Stack(
-              alignment: Alignment.center,
+          ProgressRing(
+            value: progress.fraction,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox.expand(
-                  child: CircularProgressIndicator(
-                    value: progress.fraction,
-                    strokeWidth: 10,
-                    strokeCap: StrokeCap.round,
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                    valueColor:
-                        const AlwaysStoppedAnimation(AppColors.active),
+                Text(
+                  formatDuration(progress.remaining),
+                  style: theme.textTheme.displayMedium?.copyWith(
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      formatDuration(progress.remaining),
-                      style: theme.textTheme.displayMedium?.copyWith(
-                        fontWeight: FontWeight.w300,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                    Text(
-                      'zbývá',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'zbývá',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ],
             ),
@@ -156,7 +141,9 @@ class _ActiveView extends ConsumerWidget {
             Text(
               session.goalText,
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           const Spacer(),
           OutlinedButton.icon(
@@ -223,8 +210,7 @@ class _ClosingView extends StatelessWidget {
     final worked = (session.endedAt ?? DateTime.now())
         .difference(session.startedAt);
 
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+    return ScreenBody(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

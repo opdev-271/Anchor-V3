@@ -23,8 +23,23 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 1 — Fokus session jádro | ✅ hotovo |
 | 2 — Blokování appek (Android) | ✅ hotovo — viz [blocking-android.md](blocking-android.md) |
 | 3 — Friction Exit | ✅ hotovo |
-| 4 — Statistiky | ⏭️ další na řadě |
+| Revize Anchor-V1 | ✅ hotovo — viz [app-limits.md](app-limits.md) |
+| 4 — Statistiky fokus session | ⏭️ další na řadě |
 | 5–10 | ⬜ neotevřeno |
+
+### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
+
+Zadaná mimo původní sprintový plán, zařazená po Sprintu 3:
+
+| Požadavek | Stav |
+|---|---|
+| Vycentrovat odpočet | ✅ příčina byla v `Column`, který se smrští na šířku nejširšího potomka a `Padding` ho zarovná doleva; řeší `ScreenBody` + regresní test |
+| Světlý/tmavý režim + volba v nastavení | ✅ nová obrazovka Nastavení, volba se ukládá a načítá před prvním snímkem |
+| Sledovat celkový čas na obrazovce | ✅ přehled po dnech i po aplikacích |
+| Denní limity na aplikace | ✅ viz [app-limits.md](app-limits.md) |
+| Tři intenzity vynucení | ✅ dotaz / opis kódu na přeházené klávesnici / bez výjimky |
+| Žádné notifikace po vyčerpání | ✅ s limity popsanými v [app-limits.md](app-limits.md) |
+| Modernější a elegantnější vzhled | ✅ přibalený Inter, gradientová hero karta, prstenec odpočtu s přechodem, ploché povrchy bez stínů |
 
 **Firebase zatím není zapojený.** Vyžaduje projekt založený pod účtem uživatele
 (`google-services.json`). Sprinty 0 a 1 ho nepotřebují — aplikace je offline-first

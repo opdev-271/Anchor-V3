@@ -16,6 +16,27 @@ class InstalledApp {
   final int usageMinutes;
 }
 
+/// Čas strávený dnes v jedné aplikaci.
+class AppUsage {
+  const AppUsage({
+    required this.packageName,
+    required this.label,
+    required this.minutes,
+  });
+
+  final String packageName;
+  final String label;
+  final int minutes;
+}
+
+/// Celkový čas na obrazovce za jeden den.
+class DailyUsage {
+  const DailyUsage({required this.day, required this.minutes});
+
+  final DateTime day;
+  final int minutes;
+}
+
 /// Dart strana mostu do nativní blokovací vrstvy.
 ///
 /// Odpovídající Kotlin kód: `android/app/src/main/kotlin/cz/kotva/BlockingPlugin.kt`.
@@ -72,6 +93,53 @@ class BlockingChannel {
   }
 
   Future<void> stopBlocking() => _invoke<void>('stopBlocking');
+
+  // --- Čas na obrazovce a denní limity ---
+
+  /// Čas strávený dnes v jednotlivých aplikacích, seřazený sestupně.
+  Future<List<AppUsage>> getTodayUsage() async {
+    final raw = await _invoke<List<dynamic>>('getTodayUsage');
+    if (raw == null) return const [];
+    return raw
+        .cast<Map<dynamic, dynamic>>()
+        .map(
+          (m) => AppUsage(
+            packageName: m['packageName'] as String,
+            label: m['label'] as String,
+            minutes: (m['minutes'] as num).toInt(),
+          ),
+        )
+        .toList();
+  }
+
+  /// Celkový čas na obrazovce po dnech, nejstarší první.
+  Future<List<DailyUsage>> getDailyTotals({int days = 7}) async {
+    final raw = await _invoke<List<dynamic>>('getDailyTotals', {'days': days});
+    if (raw == null) return const [];
+    return raw
+        .cast<Map<dynamic, dynamic>>()
+        .map(
+          (m) => DailyUsage(
+            day: DateTime.fromMillisecondsSinceEpoch(
+              (m['dayStart'] as num).toInt(),
+            ),
+            minutes: (m['minutes'] as num).toInt(),
+          ),
+        )
+        .toList();
+  }
+
+  /// Propíše limity do nativní vrstvy, která je vynucuje.
+  Future<void> saveAppLimits(List<Map<String, Object>> limits) {
+    return _invoke<void>('saveAppLimits', {'limits': limits});
+  }
+
+  Future<bool> isNotificationAccessGranted() async {
+    return await _invoke<bool>('isNotificationAccessGranted') ?? false;
+  }
+
+  Future<void> openNotificationAccessSettings() =>
+      _invoke<void>('openNotificationAccessSettings');
 
   Future<T?> _invoke<T>(String method, [Map<String, dynamic>? args]) async {
     try {

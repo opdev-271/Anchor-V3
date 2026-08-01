@@ -15,6 +15,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   path: ^1.9.1
   path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
   sqlite3: ^3.5.0
 dev_dependencies:
   flutter_test:
@@ -25,3 +26,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Inter je přibalený, ne stahovaný za běhu — aplikace musí vypadat stejně
+  # i bez připojení (docs/spec.md §13, offline režim). Licence OFL,
+  # její text je v assets/fonts/Inter-LICENSE.txt.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600

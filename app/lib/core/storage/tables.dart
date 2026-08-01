@@ -103,6 +103,31 @@ class BlockedApps extends Table {
       ];
 }
 
+/// Denní limit času pro jednu aplikaci (revize Anchor-V1).
+///
+/// Zdrojem pravdy pro vynucování je nativní `AppLimits.kt` v `SharedPreferences`
+/// — služba přístupnosti běží nezávisle na Flutter enginu a do databáze by se
+/// nedostala. Tahle tabulka drží tutéž konfiguraci pro UI a pro budoucí
+/// synchronizaci; po každé změně se stav propíše do nativní vrstvy.
+class AppUsageLimits extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get packageName => text()();
+  TextColumn get appLabel => text()();
+
+  /// Kolik minut denně smí uživatel v aplikaci strávit.
+  /// Sebe-reference je idiomatika drift DSL — viz [FocusProfiles.durationMinutes].
+  // ignore: recursive_getters
+  IntColumn get dailyMinutes => integer().check(dailyMinutes.isBiggerThanValue(0))();
+
+  IntColumn get intensity => intEnum<LimitIntensity>()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {packageName},
+      ];
+}
+
 /// M:N vazba profil ↔ seznam — jeden seznam lze přiřadit více profilům
 /// (docs/data-model.md).
 class ProfileBlockedLists extends Table {

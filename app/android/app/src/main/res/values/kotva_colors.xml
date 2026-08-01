@@ -5,4 +5,5 @@
     <color name="kotva_anchor">#FF14746F</color>
     <color name="kotva_on_dark">#FFFFFFFF</color>
     <color name="kotva_on_dark_muted">#B3FFFFFF</color>
+    <color name="kotva_anchor_light">#FF7FD9CE</color>
 </resources>

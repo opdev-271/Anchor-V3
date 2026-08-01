@@ -13,7 +13,8 @@ tím, že ztíží útěk nejen do telefonu, ale i do reálných úniků — kom
 | 0 | Základy projektu, design systém, lokální databáze | ✅ |
 | 1 | Fokus session — profily, odpočet, rituál začátku, streak | ✅ |
 | 2 | Blokování aplikací na Androidu | ✅ |
-| 3 | Friction Exit — ztížené předčasné ukončení | ⏭️ další |
+| 3 | Friction Exit — ztížené předčasné ukončení | ✅ |
+| — | Revize Anchor-V1: motiv, čas na obrazovce, denní limity aplikací, vzhled | ✅ |
 | 4–10 | Statistiky, kotevní body, smart home, accountability, soukromí, onboarding | ⬜ |
 
 Podrobně v [docs/roadmap.md](docs/roadmap.md).
@@ -27,6 +28,7 @@ Podrobně v [docs/roadmap.md](docs/roadmap.md).
 | [docs/data-model.md](docs/data-model.md) | Entity a vztahy |
 | [docs/roadmap.md](docs/roadmap.md) | Rozpad MVP na sprinty s použitými API a jejich limity |
 | [docs/blocking-android.md](docs/blocking-android.md) | Blokovací vrstva — co jde, co nejde a proč |
+| [docs/app-limits.md](docs/app-limits.md) | Denní limity aplikací a čas na obrazovce |
 | [docs/post-mvp.md](docs/post-mvp.md) | Odložené funkce |
 
 ## Technologie

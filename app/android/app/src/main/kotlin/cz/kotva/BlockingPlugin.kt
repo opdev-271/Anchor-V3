@@ -58,6 +58,53 @@ class BlockingPlugin(private val context: Context) : MethodChannel.MethodCallHan
                 result.success(null)
             }
 
+            // --- Čas na obrazovce a denní limity ---
+
+            "getTodayUsage" -> result.success(
+                UsageTracker.todayByPackage(context).map { (pkg, millis) ->
+                    mapOf(
+                        "packageName" to pkg,
+                        "label" to InstalledApps.labelFor(context, pkg),
+                        "minutes" to millis / 60_000,
+                    )
+                }.sortedByDescending { it["minutes"] as Long },
+            )
+
+            "getDailyTotals" -> {
+                val days = call.argument<Int>("days") ?: 7
+                result.success(
+                    UsageTracker.dailyTotals(context, days).map { (dayStart, millis) ->
+                        mapOf("dayStart" to dayStart, "minutes" to millis / 60_000)
+                    },
+                )
+            }
+
+            "saveAppLimits" -> {
+                val raw = call.argument<List<Map<String, Any>>>("limits").orEmpty()
+                AppLimits.save(
+                    context,
+                    raw.map {
+                        AppLimit(
+                            packageName = it["packageName"] as String,
+                            label = it["label"] as? String ?: "",
+                            dailyMinutes = (it["dailyMinutes"] as Number).toInt(),
+                            intensity = LimitIntensity.fromIndex(
+                                (it["intensity"] as Number).toInt(),
+                            ),
+                        )
+                    },
+                )
+                result.success(null)
+            }
+
+            "isNotificationAccessGranted" ->
+                result.success(NotificationSuppressor.isPermissionGranted(context))
+
+            "openNotificationAccessSettings" -> {
+                openSettings(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                result.success(null)
+            }
+
             else -> result.notImplemented()
         }
     }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
+import '../../../core/design_system/screen_body.dart';
 import '../../../core/storage/enums.dart';
 import '../domain/friction_rules.dart';
 
@@ -88,8 +89,7 @@ class _FrictionExitScreenState extends ConsumerState<FrictionExitScreen>
       canPop: _canLeave,
       child: Scaffold(
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+          child: ScreenBody(
             child: switch (_phase) {
               _Phase.choice => _ChoiceView(
                   goalText: widget.goalText,

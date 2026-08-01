@@ -9,6 +9,14 @@
     <string name="shield_back">Zpět k práci</string>
     <string name="shield_open_kotva">Otevřít Kotvu</string>
 
+    <string name="limit_title">Denní limit vyčerpán</string>
+    <string name="limit_close">Zavřít aplikaci</string>
+    <string name="limit_extend">Ještě 5 minut</string>
+    <string name="limit_code_prompt">Opiš tento kód na klávesnici níže</string>
+    <string name="limit_code_wrong">Kód nesedí, zkus to znovu</string>
+
+    <string name="notification_service_label">Kotva — tlumení notifikací</string>
+
     <string name="accessibility_service_label">Kotva — blokace aplikací</string>
     <string name="accessibility_service_description">Umožňuje Kotvě poznat, která aplikace je právě v popředí, aby během fokus bloku mohla překrýt ty, které sis vybral/a. Kotva nečte obsah obrazovky ani ho nikam neposílá.</string>
 </resources>

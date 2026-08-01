@@ -5,8 +5,10 @@ import '../../../core/czech_plural.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
+import '../../app_limits/application/app_limits_providers.dart';
 import '../../blocking/application/blocking_providers.dart';
-import '../../blocking/presentation/blocked_lists_screen.dart';
+import '../../screen_time/presentation/screen_time_screen.dart';
+import '../../settings/presentation/settings_screen.dart';
 import '../application/focus_providers.dart';
 import '../domain/session_progress.dart';
 import 'profile_editor_screen.dart';
@@ -30,9 +32,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Session mohla doběhnout, zatímco aplikace neběžela.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Session mohla doběhnout, zatímco aplikace neběžela.
       ref.read(sessionControllerProvider).reconcile();
+      // Nativní vrstva mohla přijít o svůj stav (vyčištění dat, přeinstalace);
+      // databáze je tu zdrojem pravdy, tak ji propíšeme zpět.
+      ref.read(appLimitsControllerProvider).syncToNative();
     });
   }
 
@@ -68,10 +73,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         ),
         actions: [
           IconButton(
-            tooltip: 'Blokované aplikace',
-            icon: const Icon(Icons.block),
+            tooltip: 'Čas na obrazovce',
+            icon: const Icon(Icons.timelapse),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const BlockedListsScreen()),
+              MaterialPageRoute(builder: (_) => const ScreenTimeScreen()),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Nastavení',
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
             ),
           ),
         ],
@@ -175,42 +187,45 @@ class _TodayCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final streak = ref.watch(streakProvider);
     final today = ref.watch(focusedTodayProvider);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
-          children: [
-            Expanded(
-              child: _Metric(
-                label: 'Dnes odpracováno',
-                value: formatDuration(today),
-                icon: Icons.timelapse,
+    // Jediná plocha v aplikaci s výraznou barvou — nese hlavní čísla a dělá
+    // z přehledu zřetelné centrum, místo aby všechny karty vypadaly stejně.
+    return Container(
+      decoration: BoxDecoration(
+        gradient: AppColors.gradient,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Row(
+        children: [
+          Expanded(
+            child: _Metric(
+              label: 'Dnes odpracováno',
+              value: formatDuration(today),
+              icon: Icons.timelapse,
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 52,
+            color: Colors.white.withValues(alpha: 0.2),
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          ),
+          Expanded(
+            child: _Metric(
+              label: czechPlural(
+                streak,
+                one: 'den v řadě',
+                few: 'dny v řadě',
+                many: 'dní v řadě',
               ),
+              value: '$streak',
+              icon: Icons.anchor,
             ),
-            Container(
-              width: 1,
-              height: 48,
-              color: theme.dividerColor,
-              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            ),
-            Expanded(
-              child: _Metric(
-                label: czechPlural(
-                  streak,
-                  one: 'den v řadě',
-                  few: 'dny v řadě',
-                  many: 'dní v řadě',
-                ),
-                value: '$streak',
-                icon: Icons.anchor,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -233,19 +248,20 @@ class _Metric extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: theme.colorScheme.primary),
-        const SizedBox(height: AppSpacing.xs),
+        Icon(icon, size: 18, color: Colors.white.withValues(alpha: 0.7)),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           value,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w600,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: Colors.white,
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
+        const SizedBox(height: 2),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+            color: Colors.white.withValues(alpha: 0.75),
           ),
         ),
       ],
