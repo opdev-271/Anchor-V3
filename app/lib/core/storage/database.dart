@@ -185,6 +185,17 @@ class AppDatabase extends _$AppDatabase {
         .watch();
   }
 
+  /// Poslední reflexe napříč session — podklad pro statistiky (§5.6).
+  /// Prázdné texty vynechává, aby se v přehledu neobjevovaly prázdné řádky
+  /// po dechových cvičeních.
+  Stream<List<FrictionExitEvent>> watchRecentReflections({int limit = 20}) {
+    return (select(frictionExitEvents)
+          ..where((t) => t.reflectionText.isNotNull())
+          ..orderBy([(t) => OrderingTerm.desc(t.triggeredAt)])
+          ..limit(limit))
+        .watch();
+  }
+
   /// Uzavře session daným stavem. [endedAt] lze předat explicitně, aby session
   /// doběhlá na pozadí dostala správný čas konce, ne čas, kdy si toho appka
   /// všimla po návratu z pozadí.

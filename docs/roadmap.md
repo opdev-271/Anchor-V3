@@ -24,8 +24,9 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 2 — Blokování appek (Android) | ✅ hotovo — viz [blocking-android.md](blocking-android.md) |
 | 3 — Friction Exit | ✅ hotovo |
 | Revize Anchor-V1 | ✅ hotovo — viz [app-limits.md](app-limits.md) |
-| 4 — Statistiky fokus session | ⏭️ další na řadě |
-| 5–10 | ⬜ neotevřeno |
+| 4 — Statistiky fokus session | ✅ hotovo |
+| 5 — Kotevní body (BLE/NFC) | ⏭️ další na řadě |
+| 6–10 | ⬜ neotevřeno |
 
 ### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
 
@@ -100,11 +101,26 @@ Firebase Auth a cloud sync se doplní, až bude projekt k dispozici.
   k práci. Právě ta data ukážou, kdy a proč pozornost odchází (podklad pro §5.6).
 - **Permissions/API:** žádné — čistě UI a stav.
 
-## Sprint 4 — Statistiky ([§5.6](spec.md#56-statistiky-a-zpětná-vazba))
+## Sprint 4 — Statistiky ([§5.6](spec.md#56-statistiky-a-zpětná-vazba)) ✅
 
-- Agregace fokus hodin za týden/měsíc, nejúspěšnější kombinace (den/čas/délka).
-- Žádné shame prvky (červené kříže, obviňující texty) — vazba na [§11](spec.md#11-tón-etika-a-wellbeing-principy-závazné-pro-copy-i-logiku).
-- **Permissions/API:** žádné nové — čte z existujících `FocusSession` záznamů.
+- Souhrn za týden/měsíc: odpracovaný čas, počet bloků, dny s prací, průměr.
+  Průměr se počítá **na den s prací**, ne na kalendářní den — jinak by volno
+  tiše sráželo čísla, což je skrytý trest.
+- Graf odpracovaného času po dnech, jednobarevný. Odstupňování barvou podle
+  „hodně/málo" by bylo hodnocení, které §11 vylučuje.
+- Nejúspěšnější kombinace (den v týdnu, denní doba, délka bloku) a typický
+  okamžik, kdy uživatel končí dřív.
+- **Tvrzení se objeví, až je pod nimi aspoň 3× vzorek.** Bez téhle hranice by
+  aplikace po jediném bloku prohlásila „úterý je tvůj nejlepší den" — nesmysl,
+  který podkopává důvěru ve zbytek čísel. Kategorie, kde nikdy nic nedoběhlo,
+  se za „nejlepší" nevydává vůbec.
+- Typický okamžik předčasného konce je **medián**, ne průměr: jeden blok
+  ukončený po deseti vteřinách by průměr strhl.
+- Vlastní reflexe z Friction Exit jako podklad „co tě odvádělo".
+- Nikde se nepočítá „úspěšnost" ani „míra selhání" a nikde není červená (§11).
+  Přerušený blok je v souhrnu uvedený jako „kratší blok".
+- **Permissions/API:** žádné nové — čte z existujících `FocusSession`
+  a `FrictionExitEvent` záznamů.
 
 ## Sprint 5 — Real World Lock: kotvy ([§5.3](spec.md#53-rozšíření-mimo-telefon--real-world-lock), část)
 

@@ -5,6 +5,7 @@ import '../../../core/design_system/app_spacing.dart';
 import '../../app_limits/presentation/app_limits_screen.dart';
 import '../../blocking/presentation/blocked_lists_screen.dart';
 import '../../screen_time/presentation/screen_time_screen.dart';
+import '../../stats/presentation/stats_screen.dart';
 import '../application/settings_providers.dart';
 
 /// Nastavení aplikace (docs/spec.md §10 → „Nastavení appky").
@@ -63,6 +64,15 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           _SectionLabel('Fokus'),
+          ListTile(
+            leading: const Icon(Icons.insights_outlined),
+            title: const Text('Statistiky'),
+            subtitle: const Text('Kdy ti fokus drží nejlíp'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const StatsScreen()),
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.block),
             title: const Text('Blokované aplikace'),

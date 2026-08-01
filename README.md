@@ -15,7 +15,8 @@ tím, že ztíží útěk nejen do telefonu, ale i do reálných úniků — kom
 | 2 | Blokování aplikací na Androidu | ✅ |
 | 3 | Friction Exit — ztížené předčasné ukončení | ✅ |
 | — | Revize Anchor-V1: motiv, čas na obrazovce, denní limity aplikací, vzhled | ✅ |
-| 4–10 | Statistiky, kotevní body, smart home, accountability, soukromí, onboarding | ⬜ |
+| 4 | Statistiky — kdy fokus drží nejlíp | ✅ |
+| 5–10 | Kotevní body, smart home, accountability, soukromí, onboarding | ⬜ |
 
 Podrobně v [docs/roadmap.md](docs/roadmap.md).
 

@@ -7,8 +7,8 @@ import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
 import '../../app_limits/application/app_limits_providers.dart';
 import '../../blocking/application/blocking_providers.dart';
-import '../../screen_time/presentation/screen_time_screen.dart';
 import '../../settings/presentation/settings_screen.dart';
+import '../../stats/presentation/stats_screen.dart';
 import '../application/focus_providers.dart';
 import '../domain/session_progress.dart';
 import 'profile_editor_screen.dart';
@@ -73,10 +73,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         ),
         actions: [
           IconButton(
-            tooltip: 'Čas na obrazovce',
-            icon: const Icon(Icons.timelapse),
+            tooltip: 'Statistiky',
+            icon: const Icon(Icons.insights_outlined),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ScreenTimeScreen()),
+              MaterialPageRoute(builder: (_) => const StatsScreen()),
             ),
           ),
           IconButton(
