@@ -7,6 +7,29 @@
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
 
+    <!-- Kotevní bod přes Bluetooth maják (docs/spec.md §5.3).
+
+         `neverForLocation` je tu podstatné: bez něj by Android vyžadoval
+         polohové oprávnění, protože z okolních majáků lze polohu odvodit.
+         Kotva polohu neodvozuje a nechce ji — deklarace to říká systému
+         i uživateli (docs/spec.md §9). -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+
+    <!-- Android 11 a starší BLUETOOTH_SCAN neznají a skenování tam podmiňují
+         polohovým oprávněním. Omezeno na tyto verze, ať si na novějších
+         o polohu neříkáme zbytečně. -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30" />
+
+    <!-- NFC štítek jako kotva. Nepovinné: telefony bez NFC mají aplikaci
+         normálně používat, jen bez tohohle typu kotvy. -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+
     <application
         android:label="Kotva"
         android:name="${applicationName}"

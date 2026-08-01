@@ -25,8 +25,9 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 3 — Friction Exit | ✅ hotovo |
 | Revize Anchor-V1 | ✅ hotovo — viz [app-limits.md](app-limits.md) |
 | 4 — Statistiky fokus session | ✅ hotovo |
-| 5 — Kotevní body (BLE/NFC) | ⏭️ další na řadě |
-| 6–10 | ⬜ neotevřeno |
+| 5 — Kotevní body (BLE/NFC) | ✅ hotovo — viz [anchors.md](anchors.md) |
+| 6 — Smart home (TP-Link Kasa) | ⏭️ další na řadě |
+| 7–10 | ⬜ neotevřeno |
 
 ### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
 

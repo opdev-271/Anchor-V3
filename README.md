@@ -16,7 +16,8 @@ tím, že ztíží útěk nejen do telefonu, ale i do reálných úniků — kom
 | 3 | Friction Exit — ztížené předčasné ukončení | ✅ |
 | — | Revize Anchor-V1: motiv, čas na obrazovce, denní limity aplikací, vzhled | ✅ |
 | 4 | Statistiky — kdy fokus drží nejlíp | ✅ |
-| 5–10 | Kotevní body, smart home, accountability, soukromí, onboarding | ⬜ |
+| 5 | Kotevní body — Bluetooth maják a NFC štítek | ✅ |
+| 6–10 | Smart home, accountability, soukromí, onboarding | ⬜ |
 
 Podrobně v [docs/roadmap.md](docs/roadmap.md).
 
@@ -30,6 +31,7 @@ Podrobně v [docs/roadmap.md](docs/roadmap.md).
 | [docs/roadmap.md](docs/roadmap.md) | Rozpad MVP na sprinty s použitými API a jejich limity |
 | [docs/blocking-android.md](docs/blocking-android.md) | Blokovací vrstva — co jde, co nejde a proč |
 | [docs/app-limits.md](docs/app-limits.md) | Denní limity aplikací a čas na obrazovce |
+| [docs/anchors.md](docs/anchors.md) | Kotevní body — spotřeba baterie a limity BLE/NFC |
 | [docs/post-mvp.md](docs/post-mvp.md) | Odložené funkce |
 
 ## Technologie

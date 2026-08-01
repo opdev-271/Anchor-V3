@@ -8,10 +8,14 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
 
-        MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            BlockingPlugin.CHANNEL,
-        ).setMethodCallHandler(BlockingPlugin(applicationContext))
+        MethodChannel(messenger, BlockingPlugin.CHANNEL)
+            .setMethodCallHandler(BlockingPlugin(applicationContext))
+
+        // Kotvy potřebují Activity — NFC čtečka i žádost o oprávnění jdou
+        // spustit jen z popředí aplikace.
+        val anchorChannel = MethodChannel(messenger, AnchorPlugin.CHANNEL)
+        anchorChannel.setMethodCallHandler(AnchorPlugin(this, anchorChannel))
     }
 }

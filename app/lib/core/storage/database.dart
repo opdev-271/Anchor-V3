@@ -24,6 +24,8 @@ part 'database.g.dart';
     ProfileBlockedLists,
     FrictionExitEvents,
     AppUsageLimits,
+    AnchorPoints,
+    AnchorEvents,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -33,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -55,6 +57,12 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             // Revize Anchor-V1 — denní limity aplikací.
             await m.createTable(appUsageLimits);
+          }
+          if (from < 5) {
+            // Sprint 5 — kotevní body (docs/spec.md §5.3).
+            await m.createTable(anchorPoints);
+            await m.createTable(anchorEvents);
+            await m.addColumn(focusProfiles, focusProfiles.anchorPointId);
           }
         },
         beforeOpen: (details) async {
@@ -82,6 +90,7 @@ class AppDatabase extends _$AppDatabase {
     required int durationMinutes,
     required String goalText,
     required StrictnessLevel strictness,
+    int? anchorPointId,
   }) {
     final now = DateTime.now();
     return into(focusProfiles).insert(
@@ -90,6 +99,7 @@ class AppDatabase extends _$AppDatabase {
         durationMinutes: durationMinutes,
         strictness: strictness,
         goalText: Value(goalText),
+        anchorPointId: Value(anchorPointId),
         createdAt: now,
         updatedAt: now,
       ),
@@ -102,6 +112,7 @@ class AppDatabase extends _$AppDatabase {
     required int durationMinutes,
     required String goalText,
     required StrictnessLevel strictness,
+    int? anchorPointId,
   }) {
     return (update(focusProfiles)..where((t) => t.id.equals(id))).write(
       FocusProfilesCompanion(
@@ -109,6 +120,9 @@ class AppDatabase extends _$AppDatabase {
         durationMinutes: Value(durationMinutes),
         goalText: Value(goalText),
         strictness: Value(strictness),
+        // Value(null) je tu podstatné: odebrání kotvy se musí zapsat,
+        // ne tiše přeskočit jako „nezměněno".
+        anchorPointId: Value(anchorPointId),
         updatedAt: Value(DateTime.now()),
       ),
     );
@@ -338,6 +352,88 @@ class AppDatabase extends _$AppDatabase {
       ..where(profileBlockedLists.profileId.equals(profileId));
     final rows = await query.get();
     return rows.map((r) => r.read(blockedApps.packageName)!).toList();
+  }
+
+  // --- Kotevní body ---
+
+  Stream<List<AnchorPoint>> watchAnchors() {
+    return (select(anchorPoints)..orderBy([(t) => OrderingTerm.asc(t.name)]))
+        .watch();
+  }
+
+  Future<AnchorPoint?> findAnchor(int id) {
+    return (select(anchorPoints)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  Future<int> createAnchor({
+    required AnchorType type,
+    required String tagIdentifier,
+    required String name,
+  }) {
+    return into(anchorPoints).insertOnConflictUpdate(
+      AnchorPointsCompanion.insert(
+        type: type,
+        tagIdentifier: tagIdentifier,
+        name: name,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<void> renameAnchor(int id, String name) {
+    return (update(anchorPoints)..where((t) => t.id.equals(id)))
+        .write(AnchorPointsCompanion(name: Value(name)));
+  }
+
+  Future<void> deleteAnchor(int id) {
+    return (delete(anchorPoints)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<void> markAnchorSeen(int id) {
+    return (update(anchorPoints)..where((t) => t.id.equals(id)))
+        .write(AnchorPointsCompanion(lastSeenAt: Value(DateTime.now())));
+  }
+
+  // --- Nepřítomnosti u kotvy ---
+
+  /// Otevřená nepřítomnost dané session — ta, ke které ještě nepřišel návrat.
+  Future<AnchorEvent?> openAbsence(int sessionId) {
+    return (select(anchorEvents)
+          ..where((t) => t.sessionId.equals(sessionId) & t.returnedAt.isNull())
+          ..orderBy([(t) => OrderingTerm.desc(t.leftAt)])
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  Future<int> recordDeparture({
+    required int anchorPointId,
+    required int sessionId,
+    required DateTime leftAt,
+  }) {
+    return into(anchorEvents).insert(
+      AnchorEventsCompanion.insert(
+        anchorPointId: anchorPointId,
+        sessionId: Value(sessionId),
+        leftAt: leftAt,
+      ),
+    );
+  }
+
+  Future<void> recordReturn(int eventId, {String? reflectionText}) {
+    return (update(anchorEvents)..where((t) => t.id.equals(eventId))).write(
+      AnchorEventsCompanion(
+        returnedAt: Value(DateTime.now()),
+        reflectionText: Value(reflectionText),
+      ),
+    );
+  }
+
+  Stream<List<AnchorEvent>> watchAbsences(int sessionId) {
+    return (select(anchorEvents)
+          ..where((t) => t.sessionId.equals(sessionId))
+          ..orderBy([(t) => OrderingTerm.desc(t.leftAt)]))
+        .watch();
   }
 
   // --- Denní limity aplikací ---

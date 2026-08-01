@@ -3,6 +3,485 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
+class $AnchorPointsTable extends AnchorPoints
+    with TableInfo<$AnchorPointsTable, AnchorPoint> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AnchorPointsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _remoteIdMeta = const VerificationMeta(
+    'remoteId',
+  );
+  @override
+  late final GeneratedColumn<String> remoteId = GeneratedColumn<String>(
+    'remote_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<AnchorType, int> type =
+      GeneratedColumn<int>(
+        'type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<AnchorType>($AnchorPointsTable.$convertertype);
+  static const VerificationMeta _tagIdentifierMeta = const VerificationMeta(
+    'tagIdentifier',
+  );
+  @override
+  late final GeneratedColumn<String> tagIdentifier = GeneratedColumn<String>(
+    'tag_identifier',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 60,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSeenAtMeta = const VerificationMeta(
+    'lastSeenAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSeenAt = GeneratedColumn<DateTime>(
+    'last_seen_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    remoteId,
+    type,
+    tagIdentifier,
+    name,
+    lastSeenAt,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'anchor_points';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AnchorPoint> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('remote_id')) {
+      context.handle(
+        _remoteIdMeta,
+        remoteId.isAcceptableOrUnknown(data['remote_id']!, _remoteIdMeta),
+      );
+    }
+    if (data.containsKey('tag_identifier')) {
+      context.handle(
+        _tagIdentifierMeta,
+        tagIdentifier.isAcceptableOrUnknown(
+          data['tag_identifier']!,
+          _tagIdentifierMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_tagIdentifierMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('last_seen_at')) {
+      context.handle(
+        _lastSeenAtMeta,
+        lastSeenAt.isAcceptableOrUnknown(
+          data['last_seen_at']!,
+          _lastSeenAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {tagIdentifier},
+  ];
+  @override
+  AnchorPoint map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AnchorPoint(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      remoteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_id'],
+      ),
+      type: $AnchorPointsTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
+      tagIdentifier: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tag_identifier'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      lastSeenAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_seen_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AnchorPointsTable createAlias(String alias) {
+    return $AnchorPointsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<AnchorType, int, int> $convertertype =
+      const EnumIndexConverter<AnchorType>(AnchorType.values);
+}
+
+class AnchorPoint extends DataClass implements Insertable<AnchorPoint> {
+  final int id;
+  final String? remoteId;
+  final AnchorType type;
+
+  /// BLE adresa nebo ID NFC štítku.
+  final String tagIdentifier;
+  final String name;
+  final DateTime? lastSeenAt;
+  final DateTime createdAt;
+  const AnchorPoint({
+    required this.id,
+    this.remoteId,
+    required this.type,
+    required this.tagIdentifier,
+    required this.name,
+    this.lastSeenAt,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || remoteId != null) {
+      map['remote_id'] = Variable<String>(remoteId);
+    }
+    {
+      map['type'] = Variable<int>(
+        $AnchorPointsTable.$convertertype.toSql(type),
+      );
+    }
+    map['tag_identifier'] = Variable<String>(tagIdentifier);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || lastSeenAt != null) {
+      map['last_seen_at'] = Variable<DateTime>(lastSeenAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  AnchorPointsCompanion toCompanion(bool nullToAbsent) {
+    return AnchorPointsCompanion(
+      id: Value(id),
+      remoteId: remoteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteId),
+      type: Value(type),
+      tagIdentifier: Value(tagIdentifier),
+      name: Value(name),
+      lastSeenAt: lastSeenAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSeenAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory AnchorPoint.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AnchorPoint(
+      id: serializer.fromJson<int>(json['id']),
+      remoteId: serializer.fromJson<String?>(json['remoteId']),
+      type: $AnchorPointsTable.$convertertype.fromJson(
+        serializer.fromJson<int>(json['type']),
+      ),
+      tagIdentifier: serializer.fromJson<String>(json['tagIdentifier']),
+      name: serializer.fromJson<String>(json['name']),
+      lastSeenAt: serializer.fromJson<DateTime?>(json['lastSeenAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'remoteId': serializer.toJson<String?>(remoteId),
+      'type': serializer.toJson<int>(
+        $AnchorPointsTable.$convertertype.toJson(type),
+      ),
+      'tagIdentifier': serializer.toJson<String>(tagIdentifier),
+      'name': serializer.toJson<String>(name),
+      'lastSeenAt': serializer.toJson<DateTime?>(lastSeenAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  AnchorPoint copyWith({
+    int? id,
+    Value<String?> remoteId = const Value.absent(),
+    AnchorType? type,
+    String? tagIdentifier,
+    String? name,
+    Value<DateTime?> lastSeenAt = const Value.absent(),
+    DateTime? createdAt,
+  }) => AnchorPoint(
+    id: id ?? this.id,
+    remoteId: remoteId.present ? remoteId.value : this.remoteId,
+    type: type ?? this.type,
+    tagIdentifier: tagIdentifier ?? this.tagIdentifier,
+    name: name ?? this.name,
+    lastSeenAt: lastSeenAt.present ? lastSeenAt.value : this.lastSeenAt,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  AnchorPoint copyWithCompanion(AnchorPointsCompanion data) {
+    return AnchorPoint(
+      id: data.id.present ? data.id.value : this.id,
+      remoteId: data.remoteId.present ? data.remoteId.value : this.remoteId,
+      type: data.type.present ? data.type.value : this.type,
+      tagIdentifier: data.tagIdentifier.present
+          ? data.tagIdentifier.value
+          : this.tagIdentifier,
+      name: data.name.present ? data.name.value : this.name,
+      lastSeenAt: data.lastSeenAt.present
+          ? data.lastSeenAt.value
+          : this.lastSeenAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnchorPoint(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('type: $type, ')
+          ..write('tagIdentifier: $tagIdentifier, ')
+          ..write('name: $name, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    remoteId,
+    type,
+    tagIdentifier,
+    name,
+    lastSeenAt,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AnchorPoint &&
+          other.id == this.id &&
+          other.remoteId == this.remoteId &&
+          other.type == this.type &&
+          other.tagIdentifier == this.tagIdentifier &&
+          other.name == this.name &&
+          other.lastSeenAt == this.lastSeenAt &&
+          other.createdAt == this.createdAt);
+}
+
+class AnchorPointsCompanion extends UpdateCompanion<AnchorPoint> {
+  final Value<int> id;
+  final Value<String?> remoteId;
+  final Value<AnchorType> type;
+  final Value<String> tagIdentifier;
+  final Value<String> name;
+  final Value<DateTime?> lastSeenAt;
+  final Value<DateTime> createdAt;
+  const AnchorPointsCompanion({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.tagIdentifier = const Value.absent(),
+    this.name = const Value.absent(),
+    this.lastSeenAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  AnchorPointsCompanion.insert({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    required AnchorType type,
+    required String tagIdentifier,
+    required String name,
+    this.lastSeenAt = const Value.absent(),
+    required DateTime createdAt,
+  }) : type = Value(type),
+       tagIdentifier = Value(tagIdentifier),
+       name = Value(name),
+       createdAt = Value(createdAt);
+  static Insertable<AnchorPoint> custom({
+    Expression<int>? id,
+    Expression<String>? remoteId,
+    Expression<int>? type,
+    Expression<String>? tagIdentifier,
+    Expression<String>? name,
+    Expression<DateTime>? lastSeenAt,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (remoteId != null) 'remote_id': remoteId,
+      if (type != null) 'type': type,
+      if (tagIdentifier != null) 'tag_identifier': tagIdentifier,
+      if (name != null) 'name': name,
+      if (lastSeenAt != null) 'last_seen_at': lastSeenAt,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  AnchorPointsCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? remoteId,
+    Value<AnchorType>? type,
+    Value<String>? tagIdentifier,
+    Value<String>? name,
+    Value<DateTime?>? lastSeenAt,
+    Value<DateTime>? createdAt,
+  }) {
+    return AnchorPointsCompanion(
+      id: id ?? this.id,
+      remoteId: remoteId ?? this.remoteId,
+      type: type ?? this.type,
+      tagIdentifier: tagIdentifier ?? this.tagIdentifier,
+      name: name ?? this.name,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (remoteId.present) {
+      map['remote_id'] = Variable<String>(remoteId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(
+        $AnchorPointsTable.$convertertype.toSql(type.value),
+      );
+    }
+    if (tagIdentifier.present) {
+      map['tag_identifier'] = Variable<String>(tagIdentifier.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (lastSeenAt.present) {
+      map['last_seen_at'] = Variable<DateTime>(lastSeenAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnchorPointsCompanion(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('type: $type, ')
+          ..write('tagIdentifier: $tagIdentifier, ')
+          ..write('name: $name, ')
+          ..write('lastSeenAt: $lastSeenAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $FocusProfilesTable extends FocusProfiles
     with TableInfo<$FocusProfilesTable, FocusProfile> {
   @override
@@ -81,6 +560,20 @@ class $FocusProfilesTable extends FocusProfiles
       ).withConverter<StrictnessLevel>(
         $FocusProfilesTable.$converterstrictness,
       );
+  static const VerificationMeta _anchorPointIdMeta = const VerificationMeta(
+    'anchorPointId',
+  );
+  @override
+  late final GeneratedColumn<int> anchorPointId = GeneratedColumn<int>(
+    'anchor_point_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES anchor_points (id) ON DELETE SET NULL',
+    ),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -111,6 +604,7 @@ class $FocusProfilesTable extends FocusProfiles
     durationMinutes,
     goalText,
     strictness,
+    anchorPointId,
     createdAt,
     updatedAt,
   ];
@@ -158,6 +652,15 @@ class $FocusProfilesTable extends FocusProfiles
       context.handle(
         _goalTextMeta,
         goalText.isAcceptableOrUnknown(data['goal_text']!, _goalTextMeta),
+      );
+    }
+    if (data.containsKey('anchor_point_id')) {
+      context.handle(
+        _anchorPointIdMeta,
+        anchorPointId.isAcceptableOrUnknown(
+          data['anchor_point_id']!,
+          _anchorPointIdMeta,
+        ),
       );
     }
     if (data.containsKey('created_at')) {
@@ -211,6 +714,10 @@ class $FocusProfilesTable extends FocusProfiles
           data['${effectivePrefix}strictness'],
         )!,
       ),
+      anchorPointId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anchor_point_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -244,6 +751,10 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
   final int durationMinutes;
   final String goalText;
   final StrictnessLevel strictness;
+
+  /// Kotva, u které má blok probíhat. Nepovinná — funkce musí být volitelná
+  /// a bez majáku má aplikace fungovat beze změny (docs/spec.md §8).
+  final int? anchorPointId;
   final DateTime createdAt;
   final DateTime updatedAt;
   const FocusProfile({
@@ -253,6 +764,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     required this.durationMinutes,
     required this.goalText,
     required this.strictness,
+    this.anchorPointId,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -271,6 +783,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
         $FocusProfilesTable.$converterstrictness.toSql(strictness),
       );
     }
+    if (!nullToAbsent || anchorPointId != null) {
+      map['anchor_point_id'] = Variable<int>(anchorPointId);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -286,6 +801,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       durationMinutes: Value(durationMinutes),
       goalText: Value(goalText),
       strictness: Value(strictness),
+      anchorPointId: anchorPointId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(anchorPointId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -305,6 +823,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       strictness: $FocusProfilesTable.$converterstrictness.fromJson(
         serializer.fromJson<int>(json['strictness']),
       ),
+      anchorPointId: serializer.fromJson<int?>(json['anchorPointId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -321,6 +840,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       'strictness': serializer.toJson<int>(
         $FocusProfilesTable.$converterstrictness.toJson(strictness),
       ),
+      'anchorPointId': serializer.toJson<int?>(anchorPointId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -333,6 +853,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     int? durationMinutes,
     String? goalText,
     StrictnessLevel? strictness,
+    Value<int?> anchorPointId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => FocusProfile(
@@ -342,6 +863,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     durationMinutes: durationMinutes ?? this.durationMinutes,
     goalText: goalText ?? this.goalText,
     strictness: strictness ?? this.strictness,
+    anchorPointId: anchorPointId.present
+        ? anchorPointId.value
+        : this.anchorPointId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -357,6 +881,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       strictness: data.strictness.present
           ? data.strictness.value
           : this.strictness,
+      anchorPointId: data.anchorPointId.present
+          ? data.anchorPointId.value
+          : this.anchorPointId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -371,6 +898,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
           ..write('durationMinutes: $durationMinutes, ')
           ..write('goalText: $goalText, ')
           ..write('strictness: $strictness, ')
+          ..write('anchorPointId: $anchorPointId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -385,6 +913,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     durationMinutes,
     goalText,
     strictness,
+    anchorPointId,
     createdAt,
     updatedAt,
   );
@@ -398,6 +927,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
           other.durationMinutes == this.durationMinutes &&
           other.goalText == this.goalText &&
           other.strictness == this.strictness &&
+          other.anchorPointId == this.anchorPointId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -409,6 +939,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
   final Value<int> durationMinutes;
   final Value<String> goalText;
   final Value<StrictnessLevel> strictness;
+  final Value<int?> anchorPointId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const FocusProfilesCompanion({
@@ -418,6 +949,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     this.durationMinutes = const Value.absent(),
     this.goalText = const Value.absent(),
     this.strictness = const Value.absent(),
+    this.anchorPointId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -428,6 +960,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     required int durationMinutes,
     this.goalText = const Value.absent(),
     required StrictnessLevel strictness,
+    this.anchorPointId = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : name = Value(name),
@@ -442,6 +975,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     Expression<int>? durationMinutes,
     Expression<String>? goalText,
     Expression<int>? strictness,
+    Expression<int>? anchorPointId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -452,6 +986,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
       if (durationMinutes != null) 'duration_minutes': durationMinutes,
       if (goalText != null) 'goal_text': goalText,
       if (strictness != null) 'strictness': strictness,
+      if (anchorPointId != null) 'anchor_point_id': anchorPointId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -464,6 +999,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     Value<int>? durationMinutes,
     Value<String>? goalText,
     Value<StrictnessLevel>? strictness,
+    Value<int?>? anchorPointId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
   }) {
@@ -474,6 +1010,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
       durationMinutes: durationMinutes ?? this.durationMinutes,
       goalText: goalText ?? this.goalText,
       strictness: strictness ?? this.strictness,
+      anchorPointId: anchorPointId ?? this.anchorPointId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -502,6 +1039,9 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
         $FocusProfilesTable.$converterstrictness.toSql(strictness.value),
       );
     }
+    if (anchorPointId.present) {
+      map['anchor_point_id'] = Variable<int>(anchorPointId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -520,6 +1060,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
           ..write('durationMinutes: $durationMinutes, ')
           ..write('goalText: $goalText, ')
           ..write('strictness: $strictness, ')
+          ..write('anchorPointId: $anchorPointId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2912,9 +3453,442 @@ class AppUsageLimitsCompanion extends UpdateCompanion<AppUsageLimit> {
   }
 }
 
+class $AnchorEventsTable extends AnchorEvents
+    with TableInfo<$AnchorEventsTable, AnchorEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AnchorEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _anchorPointIdMeta = const VerificationMeta(
+    'anchorPointId',
+  );
+  @override
+  late final GeneratedColumn<int> anchorPointId = GeneratedColumn<int>(
+    'anchor_point_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES anchor_points (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<int> sessionId = GeneratedColumn<int>(
+    'session_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES focus_sessions (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _leftAtMeta = const VerificationMeta('leftAt');
+  @override
+  late final GeneratedColumn<DateTime> leftAt = GeneratedColumn<DateTime>(
+    'left_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _returnedAtMeta = const VerificationMeta(
+    'returnedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> returnedAt = GeneratedColumn<DateTime>(
+    'returned_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reflectionTextMeta = const VerificationMeta(
+    'reflectionText',
+  );
+  @override
+  late final GeneratedColumn<String> reflectionText = GeneratedColumn<String>(
+    'reflection_text',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    anchorPointId,
+    sessionId,
+    leftAt,
+    returnedAt,
+    reflectionText,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'anchor_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AnchorEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('anchor_point_id')) {
+      context.handle(
+        _anchorPointIdMeta,
+        anchorPointId.isAcceptableOrUnknown(
+          data['anchor_point_id']!,
+          _anchorPointIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_anchorPointIdMeta);
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    }
+    if (data.containsKey('left_at')) {
+      context.handle(
+        _leftAtMeta,
+        leftAt.isAcceptableOrUnknown(data['left_at']!, _leftAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_leftAtMeta);
+    }
+    if (data.containsKey('returned_at')) {
+      context.handle(
+        _returnedAtMeta,
+        returnedAt.isAcceptableOrUnknown(data['returned_at']!, _returnedAtMeta),
+      );
+    }
+    if (data.containsKey('reflection_text')) {
+      context.handle(
+        _reflectionTextMeta,
+        reflectionText.isAcceptableOrUnknown(
+          data['reflection_text']!,
+          _reflectionTextMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AnchorEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AnchorEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      anchorPointId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anchor_point_id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}session_id'],
+      ),
+      leftAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}left_at'],
+      )!,
+      returnedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}returned_at'],
+      ),
+      reflectionText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reflection_text'],
+      ),
+    );
+  }
+
+  @override
+  $AnchorEventsTable createAlias(String alias) {
+    return $AnchorEventsTable(attachedDatabase, alias);
+  }
+}
+
+class AnchorEvent extends DataClass implements Insertable<AnchorEvent> {
+  final int id;
+  final int anchorPointId;
+
+  /// Nepřítomnost může nastat i mimo fokus blok, proto nepovinné.
+  final int? sessionId;
+  final DateTime leftAt;
+  final DateTime? returnedAt;
+
+  /// Nepovinná odpověď na otázku při návratu. Otázka se ptá **bez obviňování**
+  /// — je to podklad pro reflexi, ne výslech (docs/spec.md §5.3 a §11).
+  final String? reflectionText;
+  const AnchorEvent({
+    required this.id,
+    required this.anchorPointId,
+    this.sessionId,
+    required this.leftAt,
+    this.returnedAt,
+    this.reflectionText,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['anchor_point_id'] = Variable<int>(anchorPointId);
+    if (!nullToAbsent || sessionId != null) {
+      map['session_id'] = Variable<int>(sessionId);
+    }
+    map['left_at'] = Variable<DateTime>(leftAt);
+    if (!nullToAbsent || returnedAt != null) {
+      map['returned_at'] = Variable<DateTime>(returnedAt);
+    }
+    if (!nullToAbsent || reflectionText != null) {
+      map['reflection_text'] = Variable<String>(reflectionText);
+    }
+    return map;
+  }
+
+  AnchorEventsCompanion toCompanion(bool nullToAbsent) {
+    return AnchorEventsCompanion(
+      id: Value(id),
+      anchorPointId: Value(anchorPointId),
+      sessionId: sessionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sessionId),
+      leftAt: Value(leftAt),
+      returnedAt: returnedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(returnedAt),
+      reflectionText: reflectionText == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reflectionText),
+    );
+  }
+
+  factory AnchorEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AnchorEvent(
+      id: serializer.fromJson<int>(json['id']),
+      anchorPointId: serializer.fromJson<int>(json['anchorPointId']),
+      sessionId: serializer.fromJson<int?>(json['sessionId']),
+      leftAt: serializer.fromJson<DateTime>(json['leftAt']),
+      returnedAt: serializer.fromJson<DateTime?>(json['returnedAt']),
+      reflectionText: serializer.fromJson<String?>(json['reflectionText']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'anchorPointId': serializer.toJson<int>(anchorPointId),
+      'sessionId': serializer.toJson<int?>(sessionId),
+      'leftAt': serializer.toJson<DateTime>(leftAt),
+      'returnedAt': serializer.toJson<DateTime?>(returnedAt),
+      'reflectionText': serializer.toJson<String?>(reflectionText),
+    };
+  }
+
+  AnchorEvent copyWith({
+    int? id,
+    int? anchorPointId,
+    Value<int?> sessionId = const Value.absent(),
+    DateTime? leftAt,
+    Value<DateTime?> returnedAt = const Value.absent(),
+    Value<String?> reflectionText = const Value.absent(),
+  }) => AnchorEvent(
+    id: id ?? this.id,
+    anchorPointId: anchorPointId ?? this.anchorPointId,
+    sessionId: sessionId.present ? sessionId.value : this.sessionId,
+    leftAt: leftAt ?? this.leftAt,
+    returnedAt: returnedAt.present ? returnedAt.value : this.returnedAt,
+    reflectionText: reflectionText.present
+        ? reflectionText.value
+        : this.reflectionText,
+  );
+  AnchorEvent copyWithCompanion(AnchorEventsCompanion data) {
+    return AnchorEvent(
+      id: data.id.present ? data.id.value : this.id,
+      anchorPointId: data.anchorPointId.present
+          ? data.anchorPointId.value
+          : this.anchorPointId,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      leftAt: data.leftAt.present ? data.leftAt.value : this.leftAt,
+      returnedAt: data.returnedAt.present
+          ? data.returnedAt.value
+          : this.returnedAt,
+      reflectionText: data.reflectionText.present
+          ? data.reflectionText.value
+          : this.reflectionText,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnchorEvent(')
+          ..write('id: $id, ')
+          ..write('anchorPointId: $anchorPointId, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('leftAt: $leftAt, ')
+          ..write('returnedAt: $returnedAt, ')
+          ..write('reflectionText: $reflectionText')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    anchorPointId,
+    sessionId,
+    leftAt,
+    returnedAt,
+    reflectionText,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AnchorEvent &&
+          other.id == this.id &&
+          other.anchorPointId == this.anchorPointId &&
+          other.sessionId == this.sessionId &&
+          other.leftAt == this.leftAt &&
+          other.returnedAt == this.returnedAt &&
+          other.reflectionText == this.reflectionText);
+}
+
+class AnchorEventsCompanion extends UpdateCompanion<AnchorEvent> {
+  final Value<int> id;
+  final Value<int> anchorPointId;
+  final Value<int?> sessionId;
+  final Value<DateTime> leftAt;
+  final Value<DateTime?> returnedAt;
+  final Value<String?> reflectionText;
+  const AnchorEventsCompanion({
+    this.id = const Value.absent(),
+    this.anchorPointId = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.leftAt = const Value.absent(),
+    this.returnedAt = const Value.absent(),
+    this.reflectionText = const Value.absent(),
+  });
+  AnchorEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required int anchorPointId,
+    this.sessionId = const Value.absent(),
+    required DateTime leftAt,
+    this.returnedAt = const Value.absent(),
+    this.reflectionText = const Value.absent(),
+  }) : anchorPointId = Value(anchorPointId),
+       leftAt = Value(leftAt);
+  static Insertable<AnchorEvent> custom({
+    Expression<int>? id,
+    Expression<int>? anchorPointId,
+    Expression<int>? sessionId,
+    Expression<DateTime>? leftAt,
+    Expression<DateTime>? returnedAt,
+    Expression<String>? reflectionText,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (anchorPointId != null) 'anchor_point_id': anchorPointId,
+      if (sessionId != null) 'session_id': sessionId,
+      if (leftAt != null) 'left_at': leftAt,
+      if (returnedAt != null) 'returned_at': returnedAt,
+      if (reflectionText != null) 'reflection_text': reflectionText,
+    });
+  }
+
+  AnchorEventsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? anchorPointId,
+    Value<int?>? sessionId,
+    Value<DateTime>? leftAt,
+    Value<DateTime?>? returnedAt,
+    Value<String?>? reflectionText,
+  }) {
+    return AnchorEventsCompanion(
+      id: id ?? this.id,
+      anchorPointId: anchorPointId ?? this.anchorPointId,
+      sessionId: sessionId ?? this.sessionId,
+      leftAt: leftAt ?? this.leftAt,
+      returnedAt: returnedAt ?? this.returnedAt,
+      reflectionText: reflectionText ?? this.reflectionText,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (anchorPointId.present) {
+      map['anchor_point_id'] = Variable<int>(anchorPointId.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<int>(sessionId.value);
+    }
+    if (leftAt.present) {
+      map['left_at'] = Variable<DateTime>(leftAt.value);
+    }
+    if (returnedAt.present) {
+      map['returned_at'] = Variable<DateTime>(returnedAt.value);
+    }
+    if (reflectionText.present) {
+      map['reflection_text'] = Variable<String>(reflectionText.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnchorEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('anchorPointId: $anchorPointId, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('leftAt: $leftAt, ')
+          ..write('returnedAt: $returnedAt, ')
+          ..write('reflectionText: $reflectionText')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $AnchorPointsTable anchorPoints = $AnchorPointsTable(this);
   late final $FocusProfilesTable focusProfiles = $FocusProfilesTable(this);
   late final $FocusSessionsTable focusSessions = $FocusSessionsTable(this);
   late final $BlockedAppListsTable blockedAppLists = $BlockedAppListsTable(
@@ -2926,11 +3900,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $FrictionExitEventsTable frictionExitEvents =
       $FrictionExitEventsTable(this);
   late final $AppUsageLimitsTable appUsageLimits = $AppUsageLimitsTable(this);
+  late final $AnchorEventsTable anchorEvents = $AnchorEventsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    anchorPoints,
     focusProfiles,
     focusSessions,
     blockedAppLists,
@@ -2938,9 +3914,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     profileBlockedLists,
     frictionExitEvents,
     appUsageLimits,
+    anchorEvents,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'anchor_points',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('focus_profiles', kind: UpdateKind.update)],
+    ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'focus_profiles',
@@ -2976,9 +3960,459 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ),
       result: [TableUpdate('friction_exit_events', kind: UpdateKind.delete)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'anchor_points',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('anchor_events', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'focus_sessions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('anchor_events', kind: UpdateKind.delete)],
+    ),
   ]);
 }
 
+typedef $$AnchorPointsTableCreateCompanionBuilder =
+    AnchorPointsCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      required AnchorType type,
+      required String tagIdentifier,
+      required String name,
+      Value<DateTime?> lastSeenAt,
+      required DateTime createdAt,
+    });
+typedef $$AnchorPointsTableUpdateCompanionBuilder =
+    AnchorPointsCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      Value<AnchorType> type,
+      Value<String> tagIdentifier,
+      Value<String> name,
+      Value<DateTime?> lastSeenAt,
+      Value<DateTime> createdAt,
+    });
+
+final class $$AnchorPointsTableReferences
+    extends BaseReferences<_$AppDatabase, $AnchorPointsTable, AnchorPoint> {
+  $$AnchorPointsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$FocusProfilesTable, List<FocusProfile>>
+  _focusProfilesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.focusProfiles,
+    aliasName: 'anchor_points__id__focus_profiles__anchor_point_id',
+  );
+
+  $$FocusProfilesTableProcessedTableManager get focusProfilesRefs {
+    final manager = $$FocusProfilesTableTableManager(
+      $_db,
+      $_db.focusProfiles,
+    ).filter((f) => f.anchorPointId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_focusProfilesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$AnchorEventsTable, List<AnchorEvent>>
+  _anchorEventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.anchorEvents,
+    aliasName: 'anchor_points__id__anchor_events__anchor_point_id',
+  );
+
+  $$AnchorEventsTableProcessedTableManager get anchorEventsRefs {
+    final manager = $$AnchorEventsTableTableManager(
+      $_db,
+      $_db.anchorEvents,
+    ).filter((f) => f.anchorPointId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_anchorEventsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$AnchorPointsTableFilterComposer
+    extends Composer<_$AppDatabase, $AnchorPointsTable> {
+  $$AnchorPointsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<AnchorType, AnchorType, int> get type =>
+      $composableBuilder(
+        column: $table.type,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get tagIdentifier => $composableBuilder(
+    column: $table.tagIdentifier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSeenAt => $composableBuilder(
+    column: $table.lastSeenAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> focusProfilesRefs(
+    Expression<bool> Function($$FocusProfilesTableFilterComposer f) f,
+  ) {
+    final $$FocusProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.focusProfiles,
+      getReferencedColumn: (t) => t.anchorPointId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.focusProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> anchorEventsRefs(
+    Expression<bool> Function($$AnchorEventsTableFilterComposer f) f,
+  ) {
+    final $$AnchorEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.anchorEvents,
+      getReferencedColumn: (t) => t.anchorPointId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.anchorEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$AnchorPointsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AnchorPointsTable> {
+  $$AnchorPointsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tagIdentifier => $composableBuilder(
+    column: $table.tagIdentifier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSeenAt => $composableBuilder(
+    column: $table.lastSeenAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AnchorPointsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AnchorPointsTable> {
+  $$AnchorPointsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteId =>
+      $composableBuilder(column: $table.remoteId, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<AnchorType, int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get tagIdentifier => $composableBuilder(
+    column: $table.tagIdentifier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSeenAt => $composableBuilder(
+    column: $table.lastSeenAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> focusProfilesRefs<T extends Object>(
+    Expression<T> Function($$FocusProfilesTableAnnotationComposer a) f,
+  ) {
+    final $$FocusProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.focusProfiles,
+      getReferencedColumn: (t) => t.anchorPointId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.focusProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> anchorEventsRefs<T extends Object>(
+    Expression<T> Function($$AnchorEventsTableAnnotationComposer a) f,
+  ) {
+    final $$AnchorEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.anchorEvents,
+      getReferencedColumn: (t) => t.anchorPointId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.anchorEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$AnchorPointsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AnchorPointsTable,
+          AnchorPoint,
+          $$AnchorPointsTableFilterComposer,
+          $$AnchorPointsTableOrderingComposer,
+          $$AnchorPointsTableAnnotationComposer,
+          $$AnchorPointsTableCreateCompanionBuilder,
+          $$AnchorPointsTableUpdateCompanionBuilder,
+          (AnchorPoint, $$AnchorPointsTableReferences),
+          AnchorPoint,
+          PrefetchHooks Function({
+            bool focusProfilesRefs,
+            bool anchorEventsRefs,
+          })
+        > {
+  $$AnchorPointsTableTableManager(_$AppDatabase db, $AnchorPointsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AnchorPointsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AnchorPointsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AnchorPointsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                Value<AnchorType> type = const Value.absent(),
+                Value<String> tagIdentifier = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime?> lastSeenAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => AnchorPointsCompanion(
+                id: id,
+                remoteId: remoteId,
+                type: type,
+                tagIdentifier: tagIdentifier,
+                name: name,
+                lastSeenAt: lastSeenAt,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                required AnchorType type,
+                required String tagIdentifier,
+                required String name,
+                Value<DateTime?> lastSeenAt = const Value.absent(),
+                required DateTime createdAt,
+              }) => AnchorPointsCompanion.insert(
+                id: id,
+                remoteId: remoteId,
+                type: type,
+                tagIdentifier: tagIdentifier,
+                name: name,
+                lastSeenAt: lastSeenAt,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$AnchorPointsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({focusProfilesRefs = false, anchorEventsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (focusProfilesRefs) db.focusProfiles,
+                    if (anchorEventsRefs) db.anchorEvents,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (focusProfilesRefs)
+                        await $_getPrefetchedData<
+                          AnchorPoint,
+                          $AnchorPointsTable,
+                          FocusProfile
+                        >(
+                          currentTable: table,
+                          referencedTable: $$AnchorPointsTableReferences
+                              ._focusProfilesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$AnchorPointsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).focusProfilesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.anchorPointId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (anchorEventsRefs)
+                        await $_getPrefetchedData<
+                          AnchorPoint,
+                          $AnchorPointsTable,
+                          AnchorEvent
+                        >(
+                          currentTable: table,
+                          referencedTable: $$AnchorPointsTableReferences
+                              ._anchorEventsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$AnchorPointsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).anchorEventsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.anchorPointId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$AnchorPointsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AnchorPointsTable,
+      AnchorPoint,
+      $$AnchorPointsTableFilterComposer,
+      $$AnchorPointsTableOrderingComposer,
+      $$AnchorPointsTableAnnotationComposer,
+      $$AnchorPointsTableCreateCompanionBuilder,
+      $$AnchorPointsTableUpdateCompanionBuilder,
+      (AnchorPoint, $$AnchorPointsTableReferences),
+      AnchorPoint,
+      PrefetchHooks Function({bool focusProfilesRefs, bool anchorEventsRefs})
+    >;
 typedef $$FocusProfilesTableCreateCompanionBuilder =
     FocusProfilesCompanion Function({
       Value<int> id,
@@ -2987,6 +4421,7 @@ typedef $$FocusProfilesTableCreateCompanionBuilder =
       required int durationMinutes,
       Value<String> goalText,
       required StrictnessLevel strictness,
+      Value<int?> anchorPointId,
       required DateTime createdAt,
       required DateTime updatedAt,
     });
@@ -2998,6 +4433,7 @@ typedef $$FocusProfilesTableUpdateCompanionBuilder =
       Value<int> durationMinutes,
       Value<String> goalText,
       Value<StrictnessLevel> strictness,
+      Value<int?> anchorPointId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
     });
@@ -3009,6 +4445,24 @@ final class $$FocusProfilesTableReferences
     super.$_table,
     super.$_typedResult,
   );
+
+  static $AnchorPointsTable _anchorPointIdTable(_$AppDatabase db) => db
+      .anchorPoints
+      .createAlias('focus_profiles__anchor_point_id__anchor_points__id');
+
+  $$AnchorPointsTableProcessedTableManager? get anchorPointId {
+    final $_column = $_itemColumn<int>('anchor_point_id');
+    if ($_column == null) return null;
+    final manager = $$AnchorPointsTableTableManager(
+      $_db,
+      $_db.anchorPoints,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_anchorPointIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static MultiTypedResultKey<$FocusSessionsTable, List<FocusSession>>
   _focusSessionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
@@ -3102,6 +4556,29 @@ class $$FocusProfilesTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$AnchorPointsTableFilterComposer get anchorPointId {
+    final $$AnchorPointsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.anchorPointId,
+      referencedTable: $db.anchorPoints,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorPointsTableFilterComposer(
+            $db: $db,
+            $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<bool> focusSessionsRefs(
     Expression<bool> Function($$FocusSessionsTableFilterComposer f) f,
@@ -3202,6 +4679,29 @@ class $$FocusProfilesTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$AnchorPointsTableOrderingComposer get anchorPointId {
+    final $$AnchorPointsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.anchorPointId,
+      referencedTable: $db.anchorPoints,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorPointsTableOrderingComposer(
+            $db: $db,
+            $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$FocusProfilesTableAnnotationComposer
@@ -3241,6 +4741,29 @@ class $$FocusProfilesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$AnchorPointsTableAnnotationComposer get anchorPointId {
+    final $$AnchorPointsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.anchorPointId,
+      referencedTable: $db.anchorPoints,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorPointsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<T> focusSessionsRefs<T extends Object>(
     Expression<T> Function($$FocusSessionsTableAnnotationComposer a) f,
@@ -3308,6 +4831,7 @@ class $$FocusProfilesTableTableManager
           (FocusProfile, $$FocusProfilesTableReferences),
           FocusProfile,
           PrefetchHooks Function({
+            bool anchorPointId,
             bool focusSessionsRefs,
             bool profileBlockedListsRefs,
           })
@@ -3331,6 +4855,7 @@ class $$FocusProfilesTableTableManager
                 Value<int> durationMinutes = const Value.absent(),
                 Value<String> goalText = const Value.absent(),
                 Value<StrictnessLevel> strictness = const Value.absent(),
+                Value<int?> anchorPointId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => FocusProfilesCompanion(
@@ -3340,6 +4865,7 @@ class $$FocusProfilesTableTableManager
                 durationMinutes: durationMinutes,
                 goalText: goalText,
                 strictness: strictness,
+                anchorPointId: anchorPointId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -3351,6 +4877,7 @@ class $$FocusProfilesTableTableManager
                 required int durationMinutes,
                 Value<String> goalText = const Value.absent(),
                 required StrictnessLevel strictness,
+                Value<int?> anchorPointId = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
               }) => FocusProfilesCompanion.insert(
@@ -3360,6 +4887,7 @@ class $$FocusProfilesTableTableManager
                 durationMinutes: durationMinutes,
                 goalText: goalText,
                 strictness: strictness,
+                anchorPointId: anchorPointId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -3372,14 +4900,51 @@ class $$FocusProfilesTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({focusSessionsRefs = false, profileBlockedListsRefs = false}) {
+              ({
+                anchorPointId = false,
+                focusSessionsRefs = false,
+                profileBlockedListsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (focusSessionsRefs) db.focusSessions,
                     if (profileBlockedListsRefs) db.profileBlockedLists,
                   ],
-                  addJoins: null,
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (anchorPointId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.anchorPointId,
+                                    referencedTable:
+                                        $$FocusProfilesTableReferences
+                                            ._anchorPointIdTable(db),
+                                    referencedColumn:
+                                        $$FocusProfilesTableReferences
+                                            ._anchorPointIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (focusSessionsRefs)
@@ -3445,6 +5010,7 @@ typedef $$FocusProfilesTableProcessedTableManager =
       (FocusProfile, $$FocusProfilesTableReferences),
       FocusProfile,
       PrefetchHooks Function({
+        bool anchorPointId,
         bool focusSessionsRefs,
         bool profileBlockedListsRefs,
       })
@@ -3518,6 +5084,24 @@ final class $$FocusSessionsTableReferences
     final cache = $_typedResult.readTableOrNull(
       _frictionExitEventsRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$AnchorEventsTable, List<AnchorEvent>>
+  _anchorEventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.anchorEvents,
+    aliasName: 'focus_sessions__id__anchor_events__session_id',
+  );
+
+  $$AnchorEventsTableProcessedTableManager get anchorEventsRefs {
+    final manager = $$AnchorEventsTableTableManager(
+      $_db,
+      $_db.anchorEvents,
+    ).filter((f) => f.sessionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_anchorEventsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -3619,6 +5203,31 @@ class $$FocusSessionsTableFilterComposer
           }) => $$FrictionExitEventsTableFilterComposer(
             $db: $db,
             $table: $db.frictionExitEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> anchorEventsRefs(
+    Expression<bool> Function($$AnchorEventsTableFilterComposer f) f,
+  ) {
+    final $$AnchorEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.anchorEvents,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.anchorEvents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3796,6 +5405,31 @@ class $$FocusSessionsTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> anchorEventsRefs<T extends Object>(
+    Expression<T> Function($$AnchorEventsTableAnnotationComposer a) f,
+  ) {
+    final $$AnchorEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.anchorEvents,
+      getReferencedColumn: (t) => t.sessionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.anchorEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$FocusSessionsTableTableManager
@@ -3811,7 +5445,11 @@ class $$FocusSessionsTableTableManager
           $$FocusSessionsTableUpdateCompanionBuilder,
           (FocusSession, $$FocusSessionsTableReferences),
           FocusSession,
-          PrefetchHooks Function({bool profileId, bool frictionExitEventsRefs})
+          PrefetchHooks Function({
+            bool profileId,
+            bool frictionExitEventsRefs,
+            bool anchorEventsRefs,
+          })
         > {
   $$FocusSessionsTableTableManager(_$AppDatabase db, $FocusSessionsTable table)
     : super(
@@ -3881,11 +5519,16 @@ class $$FocusSessionsTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({profileId = false, frictionExitEventsRefs = false}) {
+              ({
+                profileId = false,
+                frictionExitEventsRefs = false,
+                anchorEventsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (frictionExitEventsRefs) db.frictionExitEvents,
+                    if (anchorEventsRefs) db.anchorEvents,
                   ],
                   addJoins:
                       <
@@ -3944,6 +5587,27 @@ class $$FocusSessionsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (anchorEventsRefs)
+                        await $_getPrefetchedData<
+                          FocusSession,
+                          $FocusSessionsTable,
+                          AnchorEvent
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FocusSessionsTableReferences
+                              ._anchorEventsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FocusSessionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).anchorEventsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.sessionId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -3964,7 +5628,11 @@ typedef $$FocusSessionsTableProcessedTableManager =
       $$FocusSessionsTableUpdateCompanionBuilder,
       (FocusSession, $$FocusSessionsTableReferences),
       FocusSession,
-      PrefetchHooks Function({bool profileId, bool frictionExitEventsRefs})
+      PrefetchHooks Function({
+        bool profileId,
+        bool frictionExitEventsRefs,
+        bool anchorEventsRefs,
+      })
     >;
 typedef $$BlockedAppListsTableCreateCompanionBuilder =
     BlockedAppListsCompanion Function({
@@ -5613,10 +7281,434 @@ typedef $$AppUsageLimitsTableProcessedTableManager =
       AppUsageLimit,
       PrefetchHooks Function()
     >;
+typedef $$AnchorEventsTableCreateCompanionBuilder =
+    AnchorEventsCompanion Function({
+      Value<int> id,
+      required int anchorPointId,
+      Value<int?> sessionId,
+      required DateTime leftAt,
+      Value<DateTime?> returnedAt,
+      Value<String?> reflectionText,
+    });
+typedef $$AnchorEventsTableUpdateCompanionBuilder =
+    AnchorEventsCompanion Function({
+      Value<int> id,
+      Value<int> anchorPointId,
+      Value<int?> sessionId,
+      Value<DateTime> leftAt,
+      Value<DateTime?> returnedAt,
+      Value<String?> reflectionText,
+    });
+
+final class $$AnchorEventsTableReferences
+    extends BaseReferences<_$AppDatabase, $AnchorEventsTable, AnchorEvent> {
+  $$AnchorEventsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $AnchorPointsTable _anchorPointIdTable(_$AppDatabase db) => db
+      .anchorPoints
+      .createAlias('anchor_events__anchor_point_id__anchor_points__id');
+
+  $$AnchorPointsTableProcessedTableManager get anchorPointId {
+    final $_column = $_itemColumn<int>('anchor_point_id')!;
+
+    final manager = $$AnchorPointsTableTableManager(
+      $_db,
+      $_db.anchorPoints,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_anchorPointIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FocusSessionsTable _sessionIdTable(_$AppDatabase db) => db
+      .focusSessions
+      .createAlias('anchor_events__session_id__focus_sessions__id');
+
+  $$FocusSessionsTableProcessedTableManager? get sessionId {
+    final $_column = $_itemColumn<int>('session_id');
+    if ($_column == null) return null;
+    final manager = $$FocusSessionsTableTableManager(
+      $_db,
+      $_db.focusSessions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_sessionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$AnchorEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $AnchorEventsTable> {
+  $$AnchorEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get leftAt => $composableBuilder(
+    column: $table.leftAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get returnedAt => $composableBuilder(
+    column: $table.returnedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reflectionText => $composableBuilder(
+    column: $table.reflectionText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$AnchorPointsTableFilterComposer get anchorPointId {
+    final $$AnchorPointsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.anchorPointId,
+      referencedTable: $db.anchorPoints,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorPointsTableFilterComposer(
+            $db: $db,
+            $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FocusSessionsTableFilterComposer get sessionId {
+    final $$FocusSessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.focusSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusSessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.focusSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AnchorEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AnchorEventsTable> {
+  $$AnchorEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get leftAt => $composableBuilder(
+    column: $table.leftAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get returnedAt => $composableBuilder(
+    column: $table.returnedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reflectionText => $composableBuilder(
+    column: $table.reflectionText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$AnchorPointsTableOrderingComposer get anchorPointId {
+    final $$AnchorPointsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.anchorPointId,
+      referencedTable: $db.anchorPoints,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorPointsTableOrderingComposer(
+            $db: $db,
+            $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FocusSessionsTableOrderingComposer get sessionId {
+    final $$FocusSessionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.focusSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusSessionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.focusSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AnchorEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AnchorEventsTable> {
+  $$AnchorEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get leftAt =>
+      $composableBuilder(column: $table.leftAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get returnedAt => $composableBuilder(
+    column: $table.returnedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reflectionText => $composableBuilder(
+    column: $table.reflectionText,
+    builder: (column) => column,
+  );
+
+  $$AnchorPointsTableAnnotationComposer get anchorPointId {
+    final $$AnchorPointsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.anchorPointId,
+      referencedTable: $db.anchorPoints,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnchorPointsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FocusSessionsTableAnnotationComposer get sessionId {
+    final $$FocusSessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.sessionId,
+      referencedTable: $db.focusSessions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusSessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.focusSessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AnchorEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AnchorEventsTable,
+          AnchorEvent,
+          $$AnchorEventsTableFilterComposer,
+          $$AnchorEventsTableOrderingComposer,
+          $$AnchorEventsTableAnnotationComposer,
+          $$AnchorEventsTableCreateCompanionBuilder,
+          $$AnchorEventsTableUpdateCompanionBuilder,
+          (AnchorEvent, $$AnchorEventsTableReferences),
+          AnchorEvent,
+          PrefetchHooks Function({bool anchorPointId, bool sessionId})
+        > {
+  $$AnchorEventsTableTableManager(_$AppDatabase db, $AnchorEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AnchorEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AnchorEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AnchorEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> anchorPointId = const Value.absent(),
+                Value<int?> sessionId = const Value.absent(),
+                Value<DateTime> leftAt = const Value.absent(),
+                Value<DateTime?> returnedAt = const Value.absent(),
+                Value<String?> reflectionText = const Value.absent(),
+              }) => AnchorEventsCompanion(
+                id: id,
+                anchorPointId: anchorPointId,
+                sessionId: sessionId,
+                leftAt: leftAt,
+                returnedAt: returnedAt,
+                reflectionText: reflectionText,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int anchorPointId,
+                Value<int?> sessionId = const Value.absent(),
+                required DateTime leftAt,
+                Value<DateTime?> returnedAt = const Value.absent(),
+                Value<String?> reflectionText = const Value.absent(),
+              }) => AnchorEventsCompanion.insert(
+                id: id,
+                anchorPointId: anchorPointId,
+                sessionId: sessionId,
+                leftAt: leftAt,
+                returnedAt: returnedAt,
+                reflectionText: reflectionText,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$AnchorEventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({anchorPointId = false, sessionId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (anchorPointId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.anchorPointId,
+                                referencedTable: $$AnchorEventsTableReferences
+                                    ._anchorPointIdTable(db),
+                                referencedColumn: $$AnchorEventsTableReferences
+                                    ._anchorPointIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (sessionId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.sessionId,
+                                referencedTable: $$AnchorEventsTableReferences
+                                    ._sessionIdTable(db),
+                                referencedColumn: $$AnchorEventsTableReferences
+                                    ._sessionIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$AnchorEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AnchorEventsTable,
+      AnchorEvent,
+      $$AnchorEventsTableFilterComposer,
+      $$AnchorEventsTableOrderingComposer,
+      $$AnchorEventsTableAnnotationComposer,
+      $$AnchorEventsTableCreateCompanionBuilder,
+      $$AnchorEventsTableUpdateCompanionBuilder,
+      (AnchorEvent, $$AnchorEventsTableReferences),
+      AnchorEvent,
+      PrefetchHooks Function({bool anchorPointId, bool sessionId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$AnchorPointsTableTableManager get anchorPoints =>
+      $$AnchorPointsTableTableManager(_db, _db.anchorPoints);
   $$FocusProfilesTableTableManager get focusProfiles =>
       $$FocusProfilesTableTableManager(_db, _db.focusProfiles);
   $$FocusSessionsTableTableManager get focusSessions =>
@@ -5631,4 +7723,6 @@ class $AppDatabaseManager {
       $$FrictionExitEventsTableTableManager(_db, _db.frictionExitEvents);
   $$AppUsageLimitsTableTableManager get appUsageLimits =>
       $$AppUsageLimitsTableTableManager(_db, _db.appUsageLimits);
+  $$AnchorEventsTableTableManager get anchorEvents =>
+      $$AnchorEventsTableTableManager(_db, _db.anchorEvents);
 }

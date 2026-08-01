@@ -5,6 +5,8 @@ import '../../../core/czech_plural.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
+import '../../anchor/application/anchor_providers.dart';
+import '../../anchor/presentation/anchors_screen.dart';
 import '../../blocking/presentation/profile_lists_picker.dart';
 import '../application/focus_providers.dart';
 
@@ -35,6 +37,9 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
   /// Vybrané blokovací seznamy. U nového profilu se ukládají až spolu s ním.
   List<int> _selectedListIds = const [];
 
+  /// Kotva, u které má blok probíhat. `null` = bez kotvy.
+  int? _anchorPointId;
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +48,8 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
     _goalController = TextEditingController(text: p?.goalText ?? '');
     _duration = (p?.durationMinutes ?? 50).toDouble();
     _strictness = p?.strictness ?? StrictnessLevel.medium;
+
+    _anchorPointId = p?.anchorPointId;
 
     if (p != null) {
       ref.read(databaseProvider).listIdsForProfile(p.id).then((ids) {
@@ -184,6 +191,14 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
+            Text('Kotevní bod', style: theme.textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
+            _AnchorPicker(
+              selectedId: _anchorPointId,
+              onChanged: (id) => setState(() => _anchorPointId = id),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
             // Poctivě pojmenované, co ještě není hotové — místo prázdné sekce.
             Card(
               child: Padding(
@@ -194,8 +209,8 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
                     Text('Chystá se', style: theme.textTheme.titleSmall),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      'Propojení s chytrou zásuvkou a kotevním bodem zatím '
-                      'není hotové — přibude v další verzi.',
+                      'Propojení s chytrou zásuvkou zatím není hotové — '
+                      'přibude v další verzi.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -231,6 +246,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
         durationMinutes: _duration.round(),
         goalText: goal,
         strictness: _strictness,
+        anchorPointId: _anchorPointId,
       );
     } else {
       profileId = await db.createProfile(
@@ -238,6 +254,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
         durationMinutes: _duration.round(),
         goalText: goal,
         strictness: _strictness,
+        anchorPointId: _anchorPointId,
       );
     }
     await db.setListsForProfile(profileId, _selectedListIds);
@@ -267,5 +284,62 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
     if (!(confirmed ?? false)) return;
     await ref.read(databaseProvider).deleteProfile(widget.profile!.id);
     if (mounted) Navigator.of(context).pop();
+  }
+}
+
+/// Výběr kotvy pro profil. Volba „bez kotvy" je plnohodnotná — funkce musí
+/// být volitelná a bez majáku má aplikace fungovat beze změny (§8).
+class _AnchorPicker extends ConsumerWidget {
+  const _AnchorPicker({required this.selectedId, required this.onChanged});
+
+  final int? selectedId;
+  final ValueChanged<int?> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final anchors = ref.watch(anchorsProvider).valueOrNull ?? const [];
+
+    if (anchors.isEmpty) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.anchor),
+          title: const Text('Zatím žádná kotva'),
+          subtitle: const Text('Nastavit můžeš maják nebo NFC štítek.'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const AnchorsScreen()),
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: RadioGroup<int?>(
+          groupValue: selectedId,
+          onChanged: onChanged,
+          child: Column(
+            children: [
+              const RadioListTile<int?>(
+                value: null,
+                title: Text('Bez kotvy'),
+                subtitle: Text('Blok pohlídá jen čas a cíl.'),
+              ),
+              for (final anchor in anchors)
+                RadioListTile<int?>(
+                  value: anchor.id,
+                  title: Text(anchor.name),
+                  subtitle: Text(
+                    anchor.type == AnchorType.ble
+                        ? 'Maják — pozná i odchod od stolu'
+                        : 'NFC štítek — jen start přiložením',
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

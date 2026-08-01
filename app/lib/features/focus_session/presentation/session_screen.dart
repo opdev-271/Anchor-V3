@@ -7,6 +7,8 @@ import '../../../core/design_system/progress_ring.dart';
 import '../../../core/design_system/screen_body.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
+import '../../anchor/application/anchor_providers.dart';
+import '../../anchor/presentation/return_prompt_sheet.dart';
 import '../../friction_exit/presentation/friction_exit_screen.dart';
 import '../application/focus_providers.dart';
 import '../domain/session_progress.dart';
@@ -51,6 +53,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Hlídání kotvy se řídí stavem session; stačí ho udržet naživu.
+    ref.watch(anchorMonitorProvider);
+
+    // Po návratu ke kotvě se nabídne poznámka pro reflexi (§5.3).
+    ref.listen<AnchorEvent?>(openAbsenceProvider, (previous, next) {
+      if (next != null) _askAboutAbsence(next);
+    });
+
     final sessionAsync = ref.watch(sessionByIdProvider(widget.sessionId));
 
     return PopScope(
@@ -84,6 +94,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _askAboutAbsence(AnchorEvent absence) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => ReturnPromptSheet(absence: absence),
     );
   }
 

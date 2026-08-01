@@ -25,6 +25,13 @@ class FocusProfiles extends Table {
 
   TextColumn get goalText => text().withDefault(const Constant(''))();
   IntColumn get strictness => intEnum<StrictnessLevel>()();
+
+  /// Kotva, u které má blok probíhat. Nepovinná — funkce musí být volitelná
+  /// a bez majáku má aplikace fungovat beze změny (docs/spec.md §8).
+  IntColumn get anchorPointId => integer()
+      .nullable()
+      .references(AnchorPoints, #id, onDelete: KeyAction.setNull)();
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 }
@@ -101,6 +108,51 @@ class BlockedApps extends Table {
   List<Set<Column>> get uniqueKeys => [
         {listId, packageName},
       ];
+}
+
+/// Kotevní bod — místo, u kterého má uživatel pracovat (docs/data-model.md →
+/// AnchorPoint, docs/spec.md §5.3).
+class AnchorPoints extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get remoteId => text().nullable()();
+  IntColumn get type => intEnum<AnchorType>()();
+
+  /// BLE adresa nebo ID NFC štítku.
+  TextColumn get tagIdentifier => text()();
+
+  TextColumn get name => text().withLength(min: 1, max: 60)();
+  DateTimeColumn get lastSeenAt => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {tagIdentifier},
+      ];
+}
+
+/// Jedna nepřítomnost u kotvy (docs/data-model.md → AnchorEvent).
+///
+/// Odchod a návrat drží **jeden řádek** se dvěma časy, ne dvě události.
+/// Datový model navrhoval `eventType` (left/returned); při implementaci se
+/// ukázalo, že pár v jednom řádku je jednodušší číst i vyhodnocovat — otevřená
+/// nepřítomnost je prostě ta, které chybí `returnedAt`.
+class AnchorEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  IntColumn get anchorPointId =>
+      integer().references(AnchorPoints, #id, onDelete: KeyAction.cascade)();
+
+  /// Nepřítomnost může nastat i mimo fokus blok, proto nepovinné.
+  IntColumn get sessionId => integer()
+      .nullable()
+      .references(FocusSessions, #id, onDelete: KeyAction.cascade)();
+
+  DateTimeColumn get leftAt => dateTime()();
+  DateTimeColumn get returnedAt => dateTime().nullable()();
+
+  /// Nepovinná odpověď na otázku při návratu. Otázka se ptá **bez obviňování**
+  /// — je to podklad pro reflexi, ne výslech (docs/spec.md §5.3 a §11).
+  TextColumn get reflectionText => text().nullable()();
 }
 
 /// Denní limit času pro jednu aplikaci (revize Anchor-V1).

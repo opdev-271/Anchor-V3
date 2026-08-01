@@ -35,6 +35,32 @@ enum SessionStatus {
   interrupted,
 }
 
+/// Typ kotevního bodu (docs/spec.md §5.3).
+///
+/// Pořadí hodnot je perzistované jako index — **nikdy nepřeskupovat**.
+enum AnchorType {
+  /// Bluetooth maják. Umí průběžně poznat, jestli je telefon poblíž.
+  ble,
+
+  /// NFC štítek. Na rozdíl od BLE **neumí** hlídat přítomnost průběžně —
+  /// systém tag přečte jen ve chvíli, kdy k němu uživatel telefon přiloží.
+  /// Slouží tedy jako rituál („přiložit a začít"), ne jako čidlo blízkosti.
+  nfc;
+
+  String get label => switch (this) {
+        AnchorType.ble => 'Bluetooth maják',
+        AnchorType.nfc => 'NFC štítek',
+      };
+
+  String get description => switch (this) {
+        AnchorType.ble =>
+          'Kotva průběžně pozná, jestli jsi u stolu, a zaznamená, když odejdeš.',
+        AnchorType.nfc =>
+          'Přiložením telefonu ke štítku blok začneš. Android neumí NFC číst '
+              'na pozadí, takže odchod od stolu tímhle způsobem poznat nejde.',
+      };
+}
+
 /// Intenzita vynucení denního limitu aplikace (revize Anchor-V1).
 ///
 /// Pořadí hodnot se posílá jako index přes MethodChannel do `AppLimits.kt`
