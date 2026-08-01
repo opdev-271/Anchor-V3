@@ -26,6 +26,7 @@ part 'database.g.dart';
     AppUsageLimits,
     AnchorPoints,
     AnchorEvents,
+    SmartDevices,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -35,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +65,11 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(anchorEvents);
             await m.addColumn(focusProfiles, focusProfiles.anchorPointId);
           }
+          if (from < 6) {
+            // Sprint 6 — chytrá domácnost (docs/spec.md §5.3).
+            await m.createTable(smartDevices);
+            await m.addColumn(focusProfiles, focusProfiles.smartDeviceId);
+          }
         },
         beforeOpen: (details) async {
           // Bez tohohle SQLite cizí klíče ignoruje a `onDelete: cascade`
@@ -91,6 +97,7 @@ class AppDatabase extends _$AppDatabase {
     required String goalText,
     required StrictnessLevel strictness,
     int? anchorPointId,
+    int? smartDeviceId,
   }) {
     final now = DateTime.now();
     return into(focusProfiles).insert(
@@ -100,6 +107,7 @@ class AppDatabase extends _$AppDatabase {
         strictness: strictness,
         goalText: Value(goalText),
         anchorPointId: Value(anchorPointId),
+        smartDeviceId: Value(smartDeviceId),
         createdAt: now,
         updatedAt: now,
       ),
@@ -113,6 +121,7 @@ class AppDatabase extends _$AppDatabase {
     required String goalText,
     required StrictnessLevel strictness,
     int? anchorPointId,
+    int? smartDeviceId,
   }) {
     return (update(focusProfiles)..where((t) => t.id.equals(id))).write(
       FocusProfilesCompanion(
@@ -123,6 +132,7 @@ class AppDatabase extends _$AppDatabase {
         // Value(null) je tu podstatné: odebrání kotvy se musí zapsat,
         // ne tiše přeskočit jako „nezměněno".
         anchorPointId: Value(anchorPointId),
+        smartDeviceId: Value(smartDeviceId),
         updatedAt: Value(DateTime.now()),
       ),
     );
@@ -352,6 +362,43 @@ class AppDatabase extends _$AppDatabase {
       ..where(profileBlockedLists.profileId.equals(profileId));
     final rows = await query.get();
     return rows.map((r) => r.read(blockedApps.packageName)!).toList();
+  }
+
+  // --- Chytrá zařízení ---
+
+  Stream<List<SmartDevice>> watchSmartDevices() {
+    return (select(smartDevices)..orderBy([(t) => OrderingTerm.asc(t.name)]))
+        .watch();
+  }
+
+  Future<SmartDevice?> findSmartDevice(int id) {
+    return (select(smartDevices)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  Future<void> upsertSmartDevice({
+    required SmartProvider provider,
+    required String externalDeviceId,
+    required String name,
+  }) {
+    return into(smartDevices).insertOnConflictUpdate(
+      SmartDevicesCompanion.insert(
+        provider: provider,
+        externalDeviceId: externalDeviceId,
+        name: name,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<void> deleteSmartDevice(int id) {
+    return (delete(smartDevices)..where((t) => t.id.equals(id))).go();
+  }
+
+  /// Poznamená stav zásuvky před začátkem bloku, aby ho šlo na konci obnovit.
+  Future<void> rememberDeviceState(int id, bool? on) {
+    return (update(smartDevices)..where((t) => t.id.equals(id)))
+        .write(SmartDevicesCompanion(stateBeforeSession: Value(on)));
   }
 
   // --- Kotevní body ---

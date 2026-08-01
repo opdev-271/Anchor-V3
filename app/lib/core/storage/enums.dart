@@ -35,6 +35,29 @@ enum SessionStatus {
   interrupted,
 }
 
+/// Poskytovatel chytré domácnosti (docs/spec.md §5.3, §7.1).
+///
+/// Pořadí hodnot je perzistované jako index — **nikdy nepřeskupovat**.
+/// Zatím je implementovaný jen [kasa]; ostatní jsou v seznamu proto, aby
+/// pozdější doplnění nevyžadovalo migraci.
+enum SmartProvider {
+  kasa,
+  googleHome,
+  smartThings,
+  matter;
+
+  String get label => switch (this) {
+        SmartProvider.kasa => 'TP-Link Kasa',
+        SmartProvider.googleHome => 'Google Home',
+        SmartProvider.smartThings => 'SmartThings',
+        SmartProvider.matter => 'Matter',
+      };
+
+  /// Zatím umí Kotva jen Kasa. Ostatní vyžadují OAuth a partnerskou
+  /// registraci — viz docs/smart-home.md.
+  bool get isImplemented => this == SmartProvider.kasa;
+}
+
 /// Typ kotevního bodu (docs/spec.md §5.3).
 ///
 /// Pořadí hodnot je perzistované jako index — **nikdy nepřeskupovat**.

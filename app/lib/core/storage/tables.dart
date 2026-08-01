@@ -32,6 +32,12 @@ class FocusProfiles extends Table {
       .nullable()
       .references(AnchorPoints, #id, onDelete: KeyAction.setNull)();
 
+  /// Chytrá zásuvka, která se má během bloku vypnout. Také nepovinná —
+  /// bez zařízení musí zbytek aplikace fungovat beze změny (docs/spec.md §8).
+  IntColumn get smartDeviceId => integer()
+      .nullable()
+      .references(SmartDevices, #id, onDelete: KeyAction.setNull)();
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 }
@@ -107,6 +113,30 @@ class BlockedApps extends Table {
   @override
   List<Set<Column>> get uniqueKeys => [
         {listId, packageName},
+      ];
+}
+
+/// Chytré zařízení, které se má během bloku vypnout (docs/data-model.md →
+/// SmartDevice, docs/spec.md §5.3).
+class SmartDevices extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get remoteId => text().nullable()();
+  IntColumn get provider => intEnum<SmartProvider>()();
+
+  /// Identifikátor v systému poskytovatele.
+  TextColumn get externalDeviceId => text()();
+
+  TextColumn get name => text()();
+
+  /// Stav zásuvky před začátkem bloku. Po skončení se obnoví — když byla
+  /// televize vypnutá už předtím, aplikace ji na konci nesmí zapnout.
+  BoolColumn get stateBeforeSession => boolean().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {provider, externalDeviceId},
       ];
 }
 

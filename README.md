@@ -17,7 +17,8 @@ tím, že ztíží útěk nejen do telefonu, ale i do reálných úniků — kom
 | — | Revize Anchor-V1: motiv, čas na obrazovce, denní limity aplikací, vzhled | ✅ |
 | 4 | Statistiky — kdy fokus drží nejlíp | ✅ |
 | 5 | Kotevní body — Bluetooth maják a NFC štítek | ✅ |
-| 6–10 | Smart home, accountability, soukromí, onboarding | ⬜ |
+| 6 | Chytrá zásuvka (TP-Link Kasa) | ✅ kód, spínání neověřeno bez hardwaru |
+| 7–10 | Accountability, soukromí, onboarding | ⬜ |
 
 Podrobně v [docs/roadmap.md](docs/roadmap.md).
 
@@ -32,6 +33,7 @@ Podrobně v [docs/roadmap.md](docs/roadmap.md).
 | [docs/blocking-android.md](docs/blocking-android.md) | Blokovací vrstva — co jde, co nejde a proč |
 | [docs/app-limits.md](docs/app-limits.md) | Denní limity aplikací a čas na obrazovce |
 | [docs/anchors.md](docs/anchors.md) | Kotevní body — spotřeba baterie a limity BLE/NFC |
+| [docs/smart-home.md](docs/smart-home.md) | Chytrá zásuvka přes TP-Link Kasa |
 | [docs/post-mvp.md](docs/post-mvp.md) | Odložené funkce |
 
 ## Technologie

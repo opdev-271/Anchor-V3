@@ -26,8 +26,9 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | Revize Anchor-V1 | ✅ hotovo — viz [app-limits.md](app-limits.md) |
 | 4 — Statistiky fokus session | ✅ hotovo |
 | 5 — Kotevní body (BLE/NFC) | ✅ hotovo — viz [anchors.md](anchors.md) |
-| 6 — Smart home (TP-Link Kasa) | ⏭️ další na řadě |
-| 7–10 | ⬜ neotevřeno |
+| 6 — Smart home (TP-Link Kasa) | ✅ kód hotový, spínání reálné zásuvky **neověřeno** — viz [smart-home.md](smart-home.md) |
+| 7 — Accountability | ⏭️ další na řadě |
+| 8–10 | ⬜ neotevřeno |
 
 ### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
 

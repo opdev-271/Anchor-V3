@@ -8,6 +8,8 @@ import '../../../core/storage/enums.dart';
 import '../../anchor/application/anchor_providers.dart';
 import '../../anchor/presentation/anchors_screen.dart';
 import '../../blocking/presentation/profile_lists_picker.dart';
+import '../../smart_home/application/smart_home_providers.dart';
+import '../../smart_home/presentation/smart_home_screen.dart';
 import '../application/focus_providers.dart';
 
 /// Nastavení fokus profilu (docs/spec.md §10 → "Nastavení fokus profilu").
@@ -40,6 +42,9 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
   /// Kotva, u které má blok probíhat. `null` = bez kotvy.
   int? _anchorPointId;
 
+  /// Chytrá zásuvka, která se má během bloku vypnout. `null` = žádná.
+  int? _smartDeviceId;
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +55,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
     _strictness = p?.strictness ?? StrictnessLevel.medium;
 
     _anchorPointId = p?.anchorPointId;
+    _smartDeviceId = p?.smartDeviceId;
 
     if (p != null) {
       ref.read(databaseProvider).listIdsForProfile(p.id).then((ids) {
@@ -199,25 +205,11 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            // Poctivě pojmenované, co ještě není hotové — místo prázdné sekce.
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Chystá se', style: theme.textTheme.titleSmall),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'Propojení s chytrou zásuvkou zatím není hotové — '
-                      'přibude v další verzi.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            Text('Chytrá zásuvka', style: theme.textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
+            _SmartDevicePicker(
+              selectedId: _smartDeviceId,
+              onChanged: (id) => setState(() => _smartDeviceId = id),
             ),
             const SizedBox(height: AppSpacing.xl),
 
@@ -247,6 +239,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
         goalText: goal,
         strictness: _strictness,
         anchorPointId: _anchorPointId,
+        smartDeviceId: _smartDeviceId,
       );
     } else {
       profileId = await db.createProfile(
@@ -255,6 +248,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
         goalText: goal,
         strictness: _strictness,
         anchorPointId: _anchorPointId,
+        smartDeviceId: _smartDeviceId,
       );
     }
     await db.setListsForProfile(profileId, _selectedListIds);
@@ -335,6 +329,59 @@ class _AnchorPicker extends ConsumerWidget {
                         ? 'Maják — pozná i odchod od stolu'
                         : 'NFC štítek — jen start přiložením',
                   ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Výběr chytré zásuvky pro profil. „Žádná" je plnohodnotná volba — bez
+/// zařízení musí zbytek aplikace fungovat beze změny (§8).
+class _SmartDevicePicker extends ConsumerWidget {
+  const _SmartDevicePicker({required this.selectedId, required this.onChanged});
+
+  final int? selectedId;
+  final ValueChanged<int?> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final devices = ref.watch(smartDevicesProvider).valueOrNull ?? const [];
+
+    if (devices.isEmpty) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.power),
+          title: const Text('Žádná zásuvka'),
+          subtitle: const Text('Propoj účet Kasa a vyber zařízení.'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SmartHomeScreen()),
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: RadioGroup<int?>(
+          groupValue: selectedId,
+          onChanged: onChanged,
+          child: Column(
+            children: [
+              const RadioListTile<int?>(
+                value: null,
+                title: Text('Žádná'),
+                subtitle: Text('Blok se zásuvkou nehýbe.'),
+              ),
+              for (final device in devices)
+                RadioListTile<int?>(
+                  value: device.id,
+                  title: Text(device.name),
+                  subtitle: const Text('Vypne se po dobu bloku'),
                 ),
             ],
           ),

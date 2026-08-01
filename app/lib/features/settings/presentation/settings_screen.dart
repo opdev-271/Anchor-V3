@@ -6,6 +6,7 @@ import '../../anchor/presentation/anchors_screen.dart';
 import '../../app_limits/presentation/app_limits_screen.dart';
 import '../../blocking/presentation/blocked_lists_screen.dart';
 import '../../screen_time/presentation/screen_time_screen.dart';
+import '../../smart_home/presentation/smart_home_screen.dart';
 import '../../stats/presentation/stats_screen.dart';
 import '../application/settings_providers.dart';
 
@@ -81,6 +82,15 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const AnchorsScreen()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.power),
+            title: const Text('Chytrá zásuvka'),
+            subtitle: const Text('Vypnout televizi po dobu bloku'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SmartHomeScreen()),
             ),
           ),
           ListTile(

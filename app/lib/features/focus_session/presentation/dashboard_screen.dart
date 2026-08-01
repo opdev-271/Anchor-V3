@@ -8,6 +8,7 @@ import '../../../core/storage/database.dart';
 import '../../app_limits/application/app_limits_providers.dart';
 import '../../blocking/application/blocking_providers.dart';
 import '../../settings/presentation/settings_screen.dart';
+import '../../smart_home/application/smart_home_providers.dart';
 import '../../stats/presentation/stats_screen.dart';
 import '../application/focus_providers.dart';
 import '../domain/session_progress.dart';
@@ -58,8 +59,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Udržuje blokaci v souladu se stavem session po celou dobu, co appka běží.
+    // Udržuje blokaci a chytrou zásuvku v souladu se stavem session
+    // po celou dobu, co appka běží.
     ref.watch(blockingSyncProvider);
+    ref.watch(smartHomeSyncProvider);
 
     final profilesAsync = ref.watch(profilesProvider);
     final activeSession = ref.watch(activeSessionProvider).valueOrNull;

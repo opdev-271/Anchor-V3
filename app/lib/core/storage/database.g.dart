@@ -482,6 +482,491 @@ class AnchorPointsCompanion extends UpdateCompanion<AnchorPoint> {
   }
 }
 
+class $SmartDevicesTable extends SmartDevices
+    with TableInfo<$SmartDevicesTable, SmartDevice> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SmartDevicesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _remoteIdMeta = const VerificationMeta(
+    'remoteId',
+  );
+  @override
+  late final GeneratedColumn<String> remoteId = GeneratedColumn<String>(
+    'remote_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SmartProvider, int> provider =
+      GeneratedColumn<int>(
+        'provider',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<SmartProvider>($SmartDevicesTable.$converterprovider);
+  static const VerificationMeta _externalDeviceIdMeta = const VerificationMeta(
+    'externalDeviceId',
+  );
+  @override
+  late final GeneratedColumn<String> externalDeviceId = GeneratedColumn<String>(
+    'external_device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stateBeforeSessionMeta =
+      const VerificationMeta('stateBeforeSession');
+  @override
+  late final GeneratedColumn<bool> stateBeforeSession = GeneratedColumn<bool>(
+    'state_before_session',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("state_before_session" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    remoteId,
+    provider,
+    externalDeviceId,
+    name,
+    stateBeforeSession,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'smart_devices';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SmartDevice> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('remote_id')) {
+      context.handle(
+        _remoteIdMeta,
+        remoteId.isAcceptableOrUnknown(data['remote_id']!, _remoteIdMeta),
+      );
+    }
+    if (data.containsKey('external_device_id')) {
+      context.handle(
+        _externalDeviceIdMeta,
+        externalDeviceId.isAcceptableOrUnknown(
+          data['external_device_id']!,
+          _externalDeviceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_externalDeviceIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('state_before_session')) {
+      context.handle(
+        _stateBeforeSessionMeta,
+        stateBeforeSession.isAcceptableOrUnknown(
+          data['state_before_session']!,
+          _stateBeforeSessionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {provider, externalDeviceId},
+  ];
+  @override
+  SmartDevice map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SmartDevice(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      remoteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_id'],
+      ),
+      provider: $SmartDevicesTable.$converterprovider.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}provider'],
+        )!,
+      ),
+      externalDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}external_device_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      stateBeforeSession: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}state_before_session'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SmartDevicesTable createAlias(String alias) {
+    return $SmartDevicesTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SmartProvider, int, int> $converterprovider =
+      const EnumIndexConverter<SmartProvider>(SmartProvider.values);
+}
+
+class SmartDevice extends DataClass implements Insertable<SmartDevice> {
+  final int id;
+  final String? remoteId;
+  final SmartProvider provider;
+
+  /// Identifikátor v systému poskytovatele.
+  final String externalDeviceId;
+  final String name;
+
+  /// Stav zásuvky před začátkem bloku. Po skončení se obnoví — když byla
+  /// televize vypnutá už předtím, aplikace ji na konci nesmí zapnout.
+  final bool? stateBeforeSession;
+  final DateTime createdAt;
+  const SmartDevice({
+    required this.id,
+    this.remoteId,
+    required this.provider,
+    required this.externalDeviceId,
+    required this.name,
+    this.stateBeforeSession,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || remoteId != null) {
+      map['remote_id'] = Variable<String>(remoteId);
+    }
+    {
+      map['provider'] = Variable<int>(
+        $SmartDevicesTable.$converterprovider.toSql(provider),
+      );
+    }
+    map['external_device_id'] = Variable<String>(externalDeviceId);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || stateBeforeSession != null) {
+      map['state_before_session'] = Variable<bool>(stateBeforeSession);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  SmartDevicesCompanion toCompanion(bool nullToAbsent) {
+    return SmartDevicesCompanion(
+      id: Value(id),
+      remoteId: remoteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteId),
+      provider: Value(provider),
+      externalDeviceId: Value(externalDeviceId),
+      name: Value(name),
+      stateBeforeSession: stateBeforeSession == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stateBeforeSession),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory SmartDevice.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SmartDevice(
+      id: serializer.fromJson<int>(json['id']),
+      remoteId: serializer.fromJson<String?>(json['remoteId']),
+      provider: $SmartDevicesTable.$converterprovider.fromJson(
+        serializer.fromJson<int>(json['provider']),
+      ),
+      externalDeviceId: serializer.fromJson<String>(json['externalDeviceId']),
+      name: serializer.fromJson<String>(json['name']),
+      stateBeforeSession: serializer.fromJson<bool?>(
+        json['stateBeforeSession'],
+      ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'remoteId': serializer.toJson<String?>(remoteId),
+      'provider': serializer.toJson<int>(
+        $SmartDevicesTable.$converterprovider.toJson(provider),
+      ),
+      'externalDeviceId': serializer.toJson<String>(externalDeviceId),
+      'name': serializer.toJson<String>(name),
+      'stateBeforeSession': serializer.toJson<bool?>(stateBeforeSession),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  SmartDevice copyWith({
+    int? id,
+    Value<String?> remoteId = const Value.absent(),
+    SmartProvider? provider,
+    String? externalDeviceId,
+    String? name,
+    Value<bool?> stateBeforeSession = const Value.absent(),
+    DateTime? createdAt,
+  }) => SmartDevice(
+    id: id ?? this.id,
+    remoteId: remoteId.present ? remoteId.value : this.remoteId,
+    provider: provider ?? this.provider,
+    externalDeviceId: externalDeviceId ?? this.externalDeviceId,
+    name: name ?? this.name,
+    stateBeforeSession: stateBeforeSession.present
+        ? stateBeforeSession.value
+        : this.stateBeforeSession,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  SmartDevice copyWithCompanion(SmartDevicesCompanion data) {
+    return SmartDevice(
+      id: data.id.present ? data.id.value : this.id,
+      remoteId: data.remoteId.present ? data.remoteId.value : this.remoteId,
+      provider: data.provider.present ? data.provider.value : this.provider,
+      externalDeviceId: data.externalDeviceId.present
+          ? data.externalDeviceId.value
+          : this.externalDeviceId,
+      name: data.name.present ? data.name.value : this.name,
+      stateBeforeSession: data.stateBeforeSession.present
+          ? data.stateBeforeSession.value
+          : this.stateBeforeSession,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SmartDevice(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('provider: $provider, ')
+          ..write('externalDeviceId: $externalDeviceId, ')
+          ..write('name: $name, ')
+          ..write('stateBeforeSession: $stateBeforeSession, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    remoteId,
+    provider,
+    externalDeviceId,
+    name,
+    stateBeforeSession,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SmartDevice &&
+          other.id == this.id &&
+          other.remoteId == this.remoteId &&
+          other.provider == this.provider &&
+          other.externalDeviceId == this.externalDeviceId &&
+          other.name == this.name &&
+          other.stateBeforeSession == this.stateBeforeSession &&
+          other.createdAt == this.createdAt);
+}
+
+class SmartDevicesCompanion extends UpdateCompanion<SmartDevice> {
+  final Value<int> id;
+  final Value<String?> remoteId;
+  final Value<SmartProvider> provider;
+  final Value<String> externalDeviceId;
+  final Value<String> name;
+  final Value<bool?> stateBeforeSession;
+  final Value<DateTime> createdAt;
+  const SmartDevicesCompanion({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    this.provider = const Value.absent(),
+    this.externalDeviceId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.stateBeforeSession = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  SmartDevicesCompanion.insert({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    required SmartProvider provider,
+    required String externalDeviceId,
+    required String name,
+    this.stateBeforeSession = const Value.absent(),
+    required DateTime createdAt,
+  }) : provider = Value(provider),
+       externalDeviceId = Value(externalDeviceId),
+       name = Value(name),
+       createdAt = Value(createdAt);
+  static Insertable<SmartDevice> custom({
+    Expression<int>? id,
+    Expression<String>? remoteId,
+    Expression<int>? provider,
+    Expression<String>? externalDeviceId,
+    Expression<String>? name,
+    Expression<bool>? stateBeforeSession,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (remoteId != null) 'remote_id': remoteId,
+      if (provider != null) 'provider': provider,
+      if (externalDeviceId != null) 'external_device_id': externalDeviceId,
+      if (name != null) 'name': name,
+      if (stateBeforeSession != null)
+        'state_before_session': stateBeforeSession,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  SmartDevicesCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? remoteId,
+    Value<SmartProvider>? provider,
+    Value<String>? externalDeviceId,
+    Value<String>? name,
+    Value<bool?>? stateBeforeSession,
+    Value<DateTime>? createdAt,
+  }) {
+    return SmartDevicesCompanion(
+      id: id ?? this.id,
+      remoteId: remoteId ?? this.remoteId,
+      provider: provider ?? this.provider,
+      externalDeviceId: externalDeviceId ?? this.externalDeviceId,
+      name: name ?? this.name,
+      stateBeforeSession: stateBeforeSession ?? this.stateBeforeSession,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (remoteId.present) {
+      map['remote_id'] = Variable<String>(remoteId.value);
+    }
+    if (provider.present) {
+      map['provider'] = Variable<int>(
+        $SmartDevicesTable.$converterprovider.toSql(provider.value),
+      );
+    }
+    if (externalDeviceId.present) {
+      map['external_device_id'] = Variable<String>(externalDeviceId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (stateBeforeSession.present) {
+      map['state_before_session'] = Variable<bool>(stateBeforeSession.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SmartDevicesCompanion(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('provider: $provider, ')
+          ..write('externalDeviceId: $externalDeviceId, ')
+          ..write('name: $name, ')
+          ..write('stateBeforeSession: $stateBeforeSession, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $FocusProfilesTable extends FocusProfiles
     with TableInfo<$FocusProfilesTable, FocusProfile> {
   @override
@@ -574,6 +1059,20 @@ class $FocusProfilesTable extends FocusProfiles
       'REFERENCES anchor_points (id) ON DELETE SET NULL',
     ),
   );
+  static const VerificationMeta _smartDeviceIdMeta = const VerificationMeta(
+    'smartDeviceId',
+  );
+  @override
+  late final GeneratedColumn<int> smartDeviceId = GeneratedColumn<int>(
+    'smart_device_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES smart_devices (id) ON DELETE SET NULL',
+    ),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -605,6 +1104,7 @@ class $FocusProfilesTable extends FocusProfiles
     goalText,
     strictness,
     anchorPointId,
+    smartDeviceId,
     createdAt,
     updatedAt,
   ];
@@ -663,6 +1163,15 @@ class $FocusProfilesTable extends FocusProfiles
         ),
       );
     }
+    if (data.containsKey('smart_device_id')) {
+      context.handle(
+        _smartDeviceIdMeta,
+        smartDeviceId.isAcceptableOrUnknown(
+          data['smart_device_id']!,
+          _smartDeviceIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -718,6 +1227,10 @@ class $FocusProfilesTable extends FocusProfiles
         DriftSqlType.int,
         data['${effectivePrefix}anchor_point_id'],
       ),
+      smartDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}smart_device_id'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -755,6 +1268,10 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
   /// Kotva, u které má blok probíhat. Nepovinná — funkce musí být volitelná
   /// a bez majáku má aplikace fungovat beze změny (docs/spec.md §8).
   final int? anchorPointId;
+
+  /// Chytrá zásuvka, která se má během bloku vypnout. Také nepovinná —
+  /// bez zařízení musí zbytek aplikace fungovat beze změny (docs/spec.md §8).
+  final int? smartDeviceId;
   final DateTime createdAt;
   final DateTime updatedAt;
   const FocusProfile({
@@ -765,6 +1282,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     required this.goalText,
     required this.strictness,
     this.anchorPointId,
+    this.smartDeviceId,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -786,6 +1304,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     if (!nullToAbsent || anchorPointId != null) {
       map['anchor_point_id'] = Variable<int>(anchorPointId);
     }
+    if (!nullToAbsent || smartDeviceId != null) {
+      map['smart_device_id'] = Variable<int>(smartDeviceId);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -804,6 +1325,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       anchorPointId: anchorPointId == null && nullToAbsent
           ? const Value.absent()
           : Value(anchorPointId),
+      smartDeviceId: smartDeviceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(smartDeviceId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -824,6 +1348,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
         serializer.fromJson<int>(json['strictness']),
       ),
       anchorPointId: serializer.fromJson<int?>(json['anchorPointId']),
+      smartDeviceId: serializer.fromJson<int?>(json['smartDeviceId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -841,6 +1366,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
         $FocusProfilesTable.$converterstrictness.toJson(strictness),
       ),
       'anchorPointId': serializer.toJson<int?>(anchorPointId),
+      'smartDeviceId': serializer.toJson<int?>(smartDeviceId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -854,6 +1380,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     String? goalText,
     StrictnessLevel? strictness,
     Value<int?> anchorPointId = const Value.absent(),
+    Value<int?> smartDeviceId = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => FocusProfile(
@@ -866,6 +1393,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     anchorPointId: anchorPointId.present
         ? anchorPointId.value
         : this.anchorPointId,
+    smartDeviceId: smartDeviceId.present
+        ? smartDeviceId.value
+        : this.smartDeviceId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -884,6 +1414,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       anchorPointId: data.anchorPointId.present
           ? data.anchorPointId.value
           : this.anchorPointId,
+      smartDeviceId: data.smartDeviceId.present
+          ? data.smartDeviceId.value
+          : this.smartDeviceId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -899,6 +1432,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
           ..write('goalText: $goalText, ')
           ..write('strictness: $strictness, ')
           ..write('anchorPointId: $anchorPointId, ')
+          ..write('smartDeviceId: $smartDeviceId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -914,6 +1448,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     goalText,
     strictness,
     anchorPointId,
+    smartDeviceId,
     createdAt,
     updatedAt,
   );
@@ -928,6 +1463,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
           other.goalText == this.goalText &&
           other.strictness == this.strictness &&
           other.anchorPointId == this.anchorPointId &&
+          other.smartDeviceId == this.smartDeviceId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -940,6 +1476,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
   final Value<String> goalText;
   final Value<StrictnessLevel> strictness;
   final Value<int?> anchorPointId;
+  final Value<int?> smartDeviceId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const FocusProfilesCompanion({
@@ -950,6 +1487,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     this.goalText = const Value.absent(),
     this.strictness = const Value.absent(),
     this.anchorPointId = const Value.absent(),
+    this.smartDeviceId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -961,6 +1499,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     this.goalText = const Value.absent(),
     required StrictnessLevel strictness,
     this.anchorPointId = const Value.absent(),
+    this.smartDeviceId = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : name = Value(name),
@@ -976,6 +1515,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     Expression<String>? goalText,
     Expression<int>? strictness,
     Expression<int>? anchorPointId,
+    Expression<int>? smartDeviceId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -987,6 +1527,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
       if (goalText != null) 'goal_text': goalText,
       if (strictness != null) 'strictness': strictness,
       if (anchorPointId != null) 'anchor_point_id': anchorPointId,
+      if (smartDeviceId != null) 'smart_device_id': smartDeviceId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -1000,6 +1541,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     Value<String>? goalText,
     Value<StrictnessLevel>? strictness,
     Value<int?>? anchorPointId,
+    Value<int?>? smartDeviceId,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
   }) {
@@ -1011,6 +1553,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
       goalText: goalText ?? this.goalText,
       strictness: strictness ?? this.strictness,
       anchorPointId: anchorPointId ?? this.anchorPointId,
+      smartDeviceId: smartDeviceId ?? this.smartDeviceId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -1042,6 +1585,9 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     if (anchorPointId.present) {
       map['anchor_point_id'] = Variable<int>(anchorPointId.value);
     }
+    if (smartDeviceId.present) {
+      map['smart_device_id'] = Variable<int>(smartDeviceId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1061,6 +1607,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
           ..write('goalText: $goalText, ')
           ..write('strictness: $strictness, ')
           ..write('anchorPointId: $anchorPointId, ')
+          ..write('smartDeviceId: $smartDeviceId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3889,6 +4436,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $AnchorPointsTable anchorPoints = $AnchorPointsTable(this);
+  late final $SmartDevicesTable smartDevices = $SmartDevicesTable(this);
   late final $FocusProfilesTable focusProfiles = $FocusProfilesTable(this);
   late final $FocusSessionsTable focusSessions = $FocusSessionsTable(this);
   late final $BlockedAppListsTable blockedAppLists = $BlockedAppListsTable(
@@ -3907,6 +4455,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     anchorPoints,
+    smartDevices,
     focusProfiles,
     focusSessions,
     blockedAppLists,
@@ -3921,6 +4470,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName(
         'anchor_points',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('focus_profiles', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'smart_devices',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('focus_profiles', kind: UpdateKind.update)],
@@ -4413,6 +4969,348 @@ typedef $$AnchorPointsTableProcessedTableManager =
       AnchorPoint,
       PrefetchHooks Function({bool focusProfilesRefs, bool anchorEventsRefs})
     >;
+typedef $$SmartDevicesTableCreateCompanionBuilder =
+    SmartDevicesCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      required SmartProvider provider,
+      required String externalDeviceId,
+      required String name,
+      Value<bool?> stateBeforeSession,
+      required DateTime createdAt,
+    });
+typedef $$SmartDevicesTableUpdateCompanionBuilder =
+    SmartDevicesCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      Value<SmartProvider> provider,
+      Value<String> externalDeviceId,
+      Value<String> name,
+      Value<bool?> stateBeforeSession,
+      Value<DateTime> createdAt,
+    });
+
+final class $$SmartDevicesTableReferences
+    extends BaseReferences<_$AppDatabase, $SmartDevicesTable, SmartDevice> {
+  $$SmartDevicesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$FocusProfilesTable, List<FocusProfile>>
+  _focusProfilesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.focusProfiles,
+    aliasName: 'smart_devices__id__focus_profiles__smart_device_id',
+  );
+
+  $$FocusProfilesTableProcessedTableManager get focusProfilesRefs {
+    final manager = $$FocusProfilesTableTableManager(
+      $_db,
+      $_db.focusProfiles,
+    ).filter((f) => f.smartDeviceId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_focusProfilesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$SmartDevicesTableFilterComposer
+    extends Composer<_$AppDatabase, $SmartDevicesTable> {
+  $$SmartDevicesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SmartProvider, SmartProvider, int>
+  get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get externalDeviceId => $composableBuilder(
+    column: $table.externalDeviceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get stateBeforeSession => $composableBuilder(
+    column: $table.stateBeforeSession,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> focusProfilesRefs(
+    Expression<bool> Function($$FocusProfilesTableFilterComposer f) f,
+  ) {
+    final $$FocusProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.focusProfiles,
+      getReferencedColumn: (t) => t.smartDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.focusProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$SmartDevicesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SmartDevicesTable> {
+  $$SmartDevicesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get externalDeviceId => $composableBuilder(
+    column: $table.externalDeviceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get stateBeforeSession => $composableBuilder(
+    column: $table.stateBeforeSession,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SmartDevicesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SmartDevicesTable> {
+  $$SmartDevicesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteId =>
+      $composableBuilder(column: $table.remoteId, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SmartProvider, int> get provider =>
+      $composableBuilder(column: $table.provider, builder: (column) => column);
+
+  GeneratedColumn<String> get externalDeviceId => $composableBuilder(
+    column: $table.externalDeviceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<bool> get stateBeforeSession => $composableBuilder(
+    column: $table.stateBeforeSession,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> focusProfilesRefs<T extends Object>(
+    Expression<T> Function($$FocusProfilesTableAnnotationComposer a) f,
+  ) {
+    final $$FocusProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.focusProfiles,
+      getReferencedColumn: (t) => t.smartDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FocusProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.focusProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$SmartDevicesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SmartDevicesTable,
+          SmartDevice,
+          $$SmartDevicesTableFilterComposer,
+          $$SmartDevicesTableOrderingComposer,
+          $$SmartDevicesTableAnnotationComposer,
+          $$SmartDevicesTableCreateCompanionBuilder,
+          $$SmartDevicesTableUpdateCompanionBuilder,
+          (SmartDevice, $$SmartDevicesTableReferences),
+          SmartDevice,
+          PrefetchHooks Function({bool focusProfilesRefs})
+        > {
+  $$SmartDevicesTableTableManager(_$AppDatabase db, $SmartDevicesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SmartDevicesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SmartDevicesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SmartDevicesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                Value<SmartProvider> provider = const Value.absent(),
+                Value<String> externalDeviceId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<bool?> stateBeforeSession = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => SmartDevicesCompanion(
+                id: id,
+                remoteId: remoteId,
+                provider: provider,
+                externalDeviceId: externalDeviceId,
+                name: name,
+                stateBeforeSession: stateBeforeSession,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                required SmartProvider provider,
+                required String externalDeviceId,
+                required String name,
+                Value<bool?> stateBeforeSession = const Value.absent(),
+                required DateTime createdAt,
+              }) => SmartDevicesCompanion.insert(
+                id: id,
+                remoteId: remoteId,
+                provider: provider,
+                externalDeviceId: externalDeviceId,
+                name: name,
+                stateBeforeSession: stateBeforeSession,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SmartDevicesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({focusProfilesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (focusProfilesRefs) db.focusProfiles,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (focusProfilesRefs)
+                    await $_getPrefetchedData<
+                      SmartDevice,
+                      $SmartDevicesTable,
+                      FocusProfile
+                    >(
+                      currentTable: table,
+                      referencedTable: $$SmartDevicesTableReferences
+                          ._focusProfilesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$SmartDevicesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).focusProfilesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.smartDeviceId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SmartDevicesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SmartDevicesTable,
+      SmartDevice,
+      $$SmartDevicesTableFilterComposer,
+      $$SmartDevicesTableOrderingComposer,
+      $$SmartDevicesTableAnnotationComposer,
+      $$SmartDevicesTableCreateCompanionBuilder,
+      $$SmartDevicesTableUpdateCompanionBuilder,
+      (SmartDevice, $$SmartDevicesTableReferences),
+      SmartDevice,
+      PrefetchHooks Function({bool focusProfilesRefs})
+    >;
 typedef $$FocusProfilesTableCreateCompanionBuilder =
     FocusProfilesCompanion Function({
       Value<int> id,
@@ -4422,6 +5320,7 @@ typedef $$FocusProfilesTableCreateCompanionBuilder =
       Value<String> goalText,
       required StrictnessLevel strictness,
       Value<int?> anchorPointId,
+      Value<int?> smartDeviceId,
       required DateTime createdAt,
       required DateTime updatedAt,
     });
@@ -4434,6 +5333,7 @@ typedef $$FocusProfilesTableUpdateCompanionBuilder =
       Value<String> goalText,
       Value<StrictnessLevel> strictness,
       Value<int?> anchorPointId,
+      Value<int?> smartDeviceId,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
     });
@@ -4458,6 +5358,24 @@ final class $$FocusProfilesTableReferences
       $_db.anchorPoints,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_anchorPointIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SmartDevicesTable _smartDeviceIdTable(_$AppDatabase db) => db
+      .smartDevices
+      .createAlias('focus_profiles__smart_device_id__smart_devices__id');
+
+  $$SmartDevicesTableProcessedTableManager? get smartDeviceId {
+    final $_column = $_itemColumn<int>('smart_device_id');
+    if ($_column == null) return null;
+    final manager = $$SmartDevicesTableTableManager(
+      $_db,
+      $_db.smartDevices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_smartDeviceIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -4571,6 +5489,29 @@ class $$FocusProfilesTableFilterComposer
           }) => $$AnchorPointsTableFilterComposer(
             $db: $db,
             $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SmartDevicesTableFilterComposer get smartDeviceId {
+    final $$SmartDevicesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.smartDeviceId,
+      referencedTable: $db.smartDevices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SmartDevicesTableFilterComposer(
+            $db: $db,
+            $table: $db.smartDevices,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4702,6 +5643,29 @@ class $$FocusProfilesTableOrderingComposer
     );
     return composer;
   }
+
+  $$SmartDevicesTableOrderingComposer get smartDeviceId {
+    final $$SmartDevicesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.smartDeviceId,
+      referencedTable: $db.smartDevices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SmartDevicesTableOrderingComposer(
+            $db: $db,
+            $table: $db.smartDevices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$FocusProfilesTableAnnotationComposer
@@ -4756,6 +5720,29 @@ class $$FocusProfilesTableAnnotationComposer
           }) => $$AnchorPointsTableAnnotationComposer(
             $db: $db,
             $table: $db.anchorPoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SmartDevicesTableAnnotationComposer get smartDeviceId {
+    final $$SmartDevicesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.smartDeviceId,
+      referencedTable: $db.smartDevices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SmartDevicesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.smartDevices,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4832,6 +5819,7 @@ class $$FocusProfilesTableTableManager
           FocusProfile,
           PrefetchHooks Function({
             bool anchorPointId,
+            bool smartDeviceId,
             bool focusSessionsRefs,
             bool profileBlockedListsRefs,
           })
@@ -4856,6 +5844,7 @@ class $$FocusProfilesTableTableManager
                 Value<String> goalText = const Value.absent(),
                 Value<StrictnessLevel> strictness = const Value.absent(),
                 Value<int?> anchorPointId = const Value.absent(),
+                Value<int?> smartDeviceId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => FocusProfilesCompanion(
@@ -4866,6 +5855,7 @@ class $$FocusProfilesTableTableManager
                 goalText: goalText,
                 strictness: strictness,
                 anchorPointId: anchorPointId,
+                smartDeviceId: smartDeviceId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -4878,6 +5868,7 @@ class $$FocusProfilesTableTableManager
                 Value<String> goalText = const Value.absent(),
                 required StrictnessLevel strictness,
                 Value<int?> anchorPointId = const Value.absent(),
+                Value<int?> smartDeviceId = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
               }) => FocusProfilesCompanion.insert(
@@ -4888,6 +5879,7 @@ class $$FocusProfilesTableTableManager
                 goalText: goalText,
                 strictness: strictness,
                 anchorPointId: anchorPointId,
+                smartDeviceId: smartDeviceId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -4902,6 +5894,7 @@ class $$FocusProfilesTableTableManager
           prefetchHooksCallback:
               ({
                 anchorPointId = false,
+                smartDeviceId = false,
                 focusSessionsRefs = false,
                 profileBlockedListsRefs = false,
               }) {
@@ -4938,6 +5931,21 @@ class $$FocusProfilesTableTableManager
                                     referencedColumn:
                                         $$FocusProfilesTableReferences
                                             ._anchorPointIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (smartDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.smartDeviceId,
+                                    referencedTable:
+                                        $$FocusProfilesTableReferences
+                                            ._smartDeviceIdTable(db),
+                                    referencedColumn:
+                                        $$FocusProfilesTableReferences
+                                            ._smartDeviceIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -5011,6 +6019,7 @@ typedef $$FocusProfilesTableProcessedTableManager =
       FocusProfile,
       PrefetchHooks Function({
         bool anchorPointId,
+        bool smartDeviceId,
         bool focusSessionsRefs,
         bool profileBlockedListsRefs,
       })
@@ -7709,6 +8718,8 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$AnchorPointsTableTableManager get anchorPoints =>
       $$AnchorPointsTableTableManager(_db, _db.anchorPoints);
+  $$SmartDevicesTableTableManager get smartDevices =>
+      $$SmartDevicesTableTableManager(_db, _db.smartDevices);
   $$FocusProfilesTableTableManager get focusProfiles =>
       $$FocusProfilesTableTableManager(_db, _db.focusProfiles);
   $$FocusSessionsTableTableManager get focusSessions =>
