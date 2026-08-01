@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Překryv, který se zobrazí místo blokované aplikace (docs/spec.md §5.2).
+  Tón textů drží §11: připomíná cíl, neobviňuje.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/kotva_deep_sea"
+    android:padding="32dp">
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_shield_anchor"
+        android:contentDescription="@string/shield_title" />
+
+    <TextView
+        android:id="@+id/shield_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/shield_title"
+        android:textColor="@color/kotva_on_dark"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/shield_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/kotva_on_dark_muted"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/shield_remaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/kotva_on_dark"
+        android:textSize="40sp"
+        android:fontFamily="monospace"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shield_remaining_label"
+        android:textColor="@color/kotva_on_dark_muted"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/shield_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:minHeight="48dp"
+        android:text="@string/shield_back" />
+
+    <Button
+        android:id="@+id/shield_open_kotva"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:minHeight="48dp"
+        android:textColor="@color/kotva_on_dark_muted"
+        android:text="@string/shield_open_kotva" />
+
+</LinearLayout>

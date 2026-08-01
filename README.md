@@ -1,0 +1,45 @@
+# Kotva
+
+Anti-prokrastinační asistent pro Android a iOS. Pomáhá dodržet rozhodnutí „teď budu pracovat“
+tím, že ztíží útěk nejen do telefonu, ale i do reálných úniků — kombinací blokování aplikací,
+časovaných rituálů, chytré domácnosti a sociální odpovědnosti.
+
+> Ve vývoji. Aktuálně se staví Android; iOS část přibude, až bude k dispozici prostředí s Xcode.
+
+## Stav
+
+| Sprint | Obsah | Stav |
+|---|---|---|
+| 0 | Základy projektu, design systém, lokální databáze | ✅ |
+| 1 | Fokus session — profily, odpočet, rituál začátku, streak | ✅ |
+| 2 | Blokování aplikací na Androidu | ✅ |
+| 3 | Friction Exit — ztížené předčasné ukončení | ⏭️ další |
+| 4–10 | Statistiky, kotevní body, smart home, accountability, soukromí, onboarding | ⬜ |
+
+Podrobně v [docs/roadmap.md](docs/roadmap.md).
+
+## Dokumentace
+
+| Dokument | Obsah |
+|---|---|
+| [docs/spec.md](docs/spec.md) | Zadání — funkce, persony, etické principy, akceptační kritéria |
+| [docs/architecture.md](docs/architecture.md) | Stack, struktura projektu, zdůvodnění odchylek |
+| [docs/data-model.md](docs/data-model.md) | Entity a vztahy |
+| [docs/roadmap.md](docs/roadmap.md) | Rozpad MVP na sprinty s použitými API a jejich limity |
+| [docs/blocking-android.md](docs/blocking-android.md) | Blokovací vrstva — co jde, co nejde a proč |
+| [docs/post-mvp.md](docs/post-mvp.md) | Odložené funkce |
+
+## Technologie
+
+Flutter (Dart) + nativní Kotlin modul pro blokování. Lokální SQLite (`drift`), stav přes
+Riverpod. Aplikace je offline-first — funguje bez připojení i bez backendu.
+
+## Vývoj
+
+Návod na spuštění a testování je v [app/README.md](app/README.md).
+
+## Zásady, které se v kódu drží
+
+Aplikace nikdy neobviňuje uživatele za selhání a nesnaží se ho uvěznit — předčasné ukončení
+bloku je vždy možné, jen se zpomalí, aby se přerušil impulz. Data o používání aplikací se
+zpracovávají na zařízení. Podrobně v [docs/spec.md §9 a §11](docs/spec.md).

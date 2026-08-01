@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Konfigurace blokovací služby.
+
+  Záměrně co nejužší rozsah (docs/spec.md §9 — soukromí):
+   - `typeWindowStateChanged` je jediný odebíraný typ událostí; Kotva nepotřebuje
+     obsah obrazovky, jen název balíčku, který se dostal do popředí,
+   - `canRetrieveWindowContent` je vypnuté, takže služba nemá přístup k textům
+     v cizích aplikacích ani technicky,
+   - `packageNames` není omezené, protože seznam blokovaných aplikací si volí
+     uživatel až za běhu a může ho kdykoliv změnit.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault"
+    android:canRetrieveWindowContent="false"
+    android:notificationTimeout="200"
+    android:description="@string/accessibility_service_description" />

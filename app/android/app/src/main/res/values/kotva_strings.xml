@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Texty nativních obrazovek. Tón dle docs/spec.md §11 — připomínají cíl,
+  neobviňují ("Zase jsi selhal/a" a podobné formulace jsou zakázané).
+-->
+<resources>
+    <string name="shield_title">Teď máš blok</string>
+    <string name="shield_remaining_label">zbývá</string>
+    <string name="shield_back">Zpět k práci</string>
+    <string name="shield_open_kotva">Otevřít Kotvu</string>
+
+    <string name="accessibility_service_label">Kotva — blokace aplikací</string>
+    <string name="accessibility_service_description">Umožňuje Kotvě poznat, která aplikace je právě v popředí, aby během fokus bloku mohla překrýt ty, které sis vybral/a. Kotva nečte obsah obrazovky ani ho nikam neposílá.</string>
+</resources>

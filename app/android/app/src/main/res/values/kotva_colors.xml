@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Zrcadlí tokeny z lib/core/design_system/app_colors.dart pro nativní obrazovky. -->
+<resources>
+    <color name="kotva_deep_sea">#FF0E3B43</color>
+    <color name="kotva_anchor">#FF14746F</color>
+    <color name="kotva_on_dark">#FFFFFFFF</color>
+    <color name="kotva_on_dark_muted">#B3FFFFFF</color>
+</resources>

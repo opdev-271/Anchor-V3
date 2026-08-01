@@ -1,0 +1,16 @@
+# Lokální konfigurace Claude Code — obsahuje absolutní cesty k domovskému
+# adresáři a nastavení konkrétního stroje.
+.claude/
+
+# Absolutní cesty k Android SDK a Flutteru na konkrétním stroji.
+# Flutter si soubor vygeneruje sám při prvním buildu.
+app/android/local.properties
+
+# Editory
+.vscode/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
