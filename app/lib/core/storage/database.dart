@@ -28,6 +28,7 @@ part 'database.g.dart';
     AnchorEvents,
     SmartDevices,
     AccountabilityPartners,
+    ConsentRecords,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -37,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +76,14 @@ class AppDatabase extends _$AppDatabase {
             // Sprint 7 — accountability (docs/spec.md §5.4).
             await m.createTable(accountabilityPartners);
             await m.addColumn(focusProfiles, focusProfiles.notifyPartner);
+          }
+          if (from < 8) {
+            // Sprint 8 — granulární souhlasy (docs/spec.md §9).
+            //
+            // Existujícím uživatelům se souhlas **nedoplňuje**. Souhlas, který
+            // si aplikace udělí sama za uživatele, žádný souhlas není; kdo už
+            // funkce používá, dostane po aktualizaci normální dotaz.
+            await m.createTable(consentRecords);
           }
         },
         beforeOpen: (details) async {
@@ -551,12 +560,112 @@ class AppDatabase extends _$AppDatabase {
         .go();
   }
 
+  /// Zruší všechny limity naráz — po odvolání souhlasu s kategorií
+  /// `usage_stats` (docs/spec.md §9). Bez čtení času v aplikacích nemá co
+  /// vynucovat, takže konfigurace nemá kde zůstat.
+  Future<void> clearAppLimits() => delete(appUsageLimits).go();
+
   Stream<List<FocusSession>> watchRecentSessions({int limit = 20}) {
     return (select(focusSessions)
           ..where((t) => t.status.equalsValue(SessionStatus.active).not())
           ..orderBy([(t) => OrderingTerm.desc(t.startedAt)])
           ..limit(limit))
         .watch();
+  }
+
+  // --- Souhlasy se zpracováním dat (docs/spec.md §9) ---
+
+  /// Celá historie souhlasů, nejnovější první. Slouží UI i exportu.
+  Stream<List<ConsentRecord>> watchConsents() {
+    return (select(consentRecords)
+          ..orderBy([(t) => OrderingTerm.desc(t.grantedAt)]))
+        .watch();
+  }
+
+  Future<List<ConsentRecord>> allConsents() => select(consentRecords).get();
+
+  /// Udělí souhlas pro kategorii.
+  ///
+  /// Opakované udělení už udělené kategorie je bez efektu — jinak by se
+  /// historie plnila duplicitními řádky pokaždé, když uživatel přepne
+  /// přepínač tam a zpět.
+  Future<void> grantConsent(ConsentCategory category) async {
+    final open = await _openConsent(category);
+    if (open != null) return;
+    await into(consentRecords).insert(
+      ConsentRecordsCompanion.insert(
+        category: category,
+        grantedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  /// Odvolá souhlas — doplní `revokedAt` do otevřeného záznamu.
+  /// Řádek zůstává, aby byla historie doložitelná.
+  Future<void> revokeConsent(ConsentCategory category) async {
+    final open = await _openConsent(category);
+    if (open == null) return;
+    await (update(consentRecords)..where((t) => t.id.equals(open.id)))
+        .write(ConsentRecordsCompanion(revokedAt: Value(DateTime.now())));
+  }
+
+  Future<ConsentRecord?> _openConsent(ConsentCategory category) {
+    return (select(consentRecords)
+          ..where(
+            (t) => t.category.equalsValue(category) & t.revokedAt.isNull(),
+          )
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  // --- Export a smazání všech dat (docs/spec.md §9, §14) ---
+
+  Future<List<FocusProfile>> allProfiles() => select(focusProfiles).get();
+
+  Future<List<FocusSession>> allSessions() => select(focusSessions).get();
+
+  Future<List<FrictionExitEvent>> allFrictionEvents() =>
+      select(frictionExitEvents).get();
+
+  Future<List<BlockedAppList>> allBlockedLists() => select(blockedAppLists).get();
+
+  Future<List<BlockedApp>> allBlockedApps() => select(blockedApps).get();
+
+  Future<List<ProfileBlockedList>> allProfileListLinks() =>
+      select(profileBlockedLists).get();
+
+  Future<List<AnchorPoint>> allAnchors() => select(anchorPoints).get();
+
+  Future<List<AnchorEvent>> allAnchorEvents() => select(anchorEvents).get();
+
+  Future<List<SmartDevice>> allSmartDevices() => select(smartDevices).get();
+
+  /// Smaže veškerý obsah databáze.
+  ///
+  /// Maže se obsah tabulek, ne soubor: schéma i verze zůstávají, takže po
+  /// smazání běží stejná databáze dál a nehrozí, že se při dalším otevření
+  /// spustí migrace znovu od nuly.
+  ///
+  /// Pořadí jde od potomků k rodičům. Kaskády by to zvládly samy, ale explicitní
+  /// pořadí drží mazání funkční i pro tabulky, které na nikoho nenavazují.
+  ///
+  /// **Databáze není jediné úložiště.** Nativní vrstva a token k účtu Kasa žijí
+  /// jinde — kompletní smazání řeší `PrivacyController.deleteEverything`.
+  Future<void> wipeAllData() {
+    return transaction(() async {
+      await delete(frictionExitEvents).go();
+      await delete(anchorEvents).go();
+      await delete(profileBlockedLists).go();
+      await delete(blockedApps).go();
+      await delete(focusSessions).go();
+      await delete(focusProfiles).go();
+      await delete(blockedAppLists).go();
+      await delete(anchorPoints).go();
+      await delete(smartDevices).go();
+      await delete(accountabilityPartners).go();
+      await delete(appUsageLimits).go();
+      await delete(consentRecords).go();
+    });
   }
 }
 

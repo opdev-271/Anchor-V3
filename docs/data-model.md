@@ -138,8 +138,17 @@ Granulární GDPR souhlas (1 uživatel : N kategorií).
 | id | string | |
 | userId | string → User | |
 | category | enum(usage_stats, location, smart_home) | viz [spec.md § 9](spec.md#9-soukromí-a-bezpečnost) |
-| grantedAt | timestamp \| null | |
+| grantedAt | timestamp | při implementaci zpřísněno na povinné — viz níže |
 | revokedAt | timestamp \| null | |
+
+**Upřesněno při implementaci Sprintu 8: tabulka je přírůstková.** Jeden řádek = jedno udělení;
+odvolání do něj doplní `revokedAt`. Řádky se nepřepisují ani nemažou, takže zůstává doložitelná
+historie „kdy souhlas platil". Kategorie je povolená právě tehdy, když pro ni existuje řádek
+**bez** `revokedAt` — ne „poslední řádek", protože při shodných časových razítkách není pořadí
+definované.
+
+Proto je `grantedAt` povinné: řádek bez udělení by neměl co znamenat. Podrobnosti
+v [privacy.md](privacy.md).
 
 ## Vztahový diagram
 

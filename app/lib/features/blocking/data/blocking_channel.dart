@@ -141,6 +141,14 @@ class BlockingChannel {
   Future<void> openNotificationAccessSettings() =>
       _invoke<void>('openNotificationAccessSettings');
 
+  /// Zahodí veškerý stav uložený v nativní vrstvě — blokaci, limity i
+  /// potlačené notifikace (docs/spec.md §9).
+  ///
+  /// Databáze o tomhle stavu neví a smazat ho za sebe nedokáže: vynucování
+  /// limitů běží nad `SharedPreferences`, ke kterým se služba přístupnosti
+  /// dostane i tehdy, když Flutter engine vůbec neběží.
+  Future<void> clearNativeData() => _invoke<void>('clearNativeData');
+
   Future<T?> _invoke<T>(String method, [Map<String, dynamic>? args]) async {
     try {
       return await _channel.invokeMethod<T>(method, args);

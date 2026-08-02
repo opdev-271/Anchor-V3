@@ -59,6 +59,14 @@ class NotificationSuppressor : NotificationListenerService() {
                 .apply()
         }
 
+        /** Zruší potlačení pro všechny aplikace — součást smazání všech dat. */
+        fun clear(context: Context) {
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply()
+        }
+
         fun isSuppressed(context: Context, packageName: String): Boolean =
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .getLong(KEY_PREFIX + packageName, 0L) > System.currentTimeMillis()

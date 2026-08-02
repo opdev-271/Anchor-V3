@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
 import '../../focus_session/application/focus_providers.dart';
+import '../../privacy/application/privacy_providers.dart';
 import '../data/anchor_channel.dart';
 import '../domain/anchor_presence.dart';
 
@@ -113,6 +114,11 @@ class AnchorMonitor {
     final anchor = _anchor;
     final sessionId = _sessionId;
     if (anchor == null || sessionId == null) return;
+
+    // Souhlas se ověřuje před **každým** skenem, ne jen při spuštění hlídání.
+    // Uživatel ho může odvolat uprostřed běžícího bloku a od té chvíle se
+    // skenovat nesmí (docs/spec.md §9).
+    if (!_ref.read(consentGrantedProvider(ConsentCategory.location))) return;
 
     final devices = await _ref.read(anchorChannelProvider).scanOnce();
     final seen = devices.any((d) => d.address == anchor.tagIdentifier);

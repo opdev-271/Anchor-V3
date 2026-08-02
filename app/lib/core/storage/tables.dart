@@ -237,6 +237,28 @@ class AppUsageLimits extends Table {
       ];
 }
 
+/// Granulární souhlas se zpracováním jedné kategorie dat (docs/data-model.md →
+/// ConsentRecord, docs/spec.md §9).
+///
+/// Tabulka je **přírůstková**: udělení souhlasu zakládá nový řádek, odvolání
+/// do něj doplní [revokedAt]. Řádky se nepřepisují ani nemažou, takže zůstává
+/// čitelná historie „kdy uživatel souhlas dal a kdy ho vzal zpět".
+///
+/// Historii chce GDPR doložit a uživateli se objeví v exportu. Kdyby tabulka
+/// držela jen jeden aktuální řádek na kategorii, odvolání by předchozí souhlas
+/// přepsalo a doložit by nešlo nic.
+///
+/// Aktuální stav kategorie je tedy „existuje řádek bez [revokedAt]", ne
+/// „poslední řádek". Obojí dá stejný výsledek, ale první formulace nezávisí
+/// na pořadí a nerozbije se při shodných časových razítkách.
+class ConsentRecords extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get remoteId => text().nullable()();
+  IntColumn get category => intEnum<ConsentCategory>()();
+  DateTimeColumn get grantedAt => dateTime()();
+  DateTimeColumn get revokedAt => dateTime().nullable()();
+}
+
 /// M:N vazba profil ↔ seznam — jeden seznam lze přiřadit více profilům
 /// (docs/data-model.md).
 class ProfileBlockedLists extends Table {

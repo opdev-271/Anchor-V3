@@ -62,4 +62,14 @@ object BlockingState {
         prefs(context).getString(KEY_GOAL, "") ?: ""
 
     fun endsAt(context: Context): Long = prefs(context).getLong(KEY_ENDS_AT, 0L)
+
+    /**
+     * Zahodí celý stav blokování — součást smazání všech dat (docs/spec.md §9).
+     *
+     * Maže se všechno, ne jen příznak `active`: v prefs zůstávají i názvy
+     * blokovaných balíčků a text cíle, což jsou data o uživateli.
+     */
+    fun clear(context: Context) {
+        prefs(context).edit().clear().apply()
+    }
 }

@@ -28,7 +28,7 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 5 — Kotevní body (BLE/NFC) | ✅ hotovo — viz [anchors.md](anchors.md) |
 | 6 — Smart home (TP-Link Kasa) | ✅ kód hotový, spínání reálné zásuvky **neověřeno** — viz [smart-home.md](smart-home.md) |
 | 7 — Accountability | ✅ lokální část hotová, sdílení mezi zařízeními čeká na backend — viz [accountability.md](accountability.md) |
-| 8 — Soukromí a nastavení | ⏭️ další na řadě |
+| 8 — Soukromí a nastavení | ✅ hotovo (bez cloudové části — není backend) — viz [privacy.md](privacy.md) |
 | 9–10 | ⬜ neotevřeno |
 
 ### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
@@ -160,9 +160,15 @@ Firebase Auth a cloud sync se doplní, až bude projekt k dispozici.
 
 ## Sprint 8 — Soukromí a nastavení ([§9](spec.md#9-soukromí-a-bezpečnost), [§10](spec.md#10-uxui--popis-obrazovek))
 
-- Granulární souhlasy per kategorie (usage_stats, location, smart_home) — `ConsentRecord`.
-- Export a smazání všech dat jedním tlačítkem (klient + Cloud Function pro purge Firestore).
-- Nastavení appky: správa připojených smart zařízení a oprávnění.
+- ✅ Granulární souhlasy per kategorie (usage_stats, location, smart_home) — `ConsentRecord`.
+- ✅ Export všech dat jedním tlačítkem (soubor JSON předaný systémovému výběru).
+- ✅ Smazání všech dat jedním tlačítkem — databáze, nativní `SharedPreferences` i token
+  v `flutter_secure_storage`.
+- ✅ Nastavení appky: přehled oprávnění a připojených zařízení na jednom místě.
+- ⬜ **Cloud Function pro purge Firestore** — nemá co mazat, dokud není backend. Až přibude,
+  doplní se do `PrivacyController.deleteEverything` jako další krok.
+
+Podrobnosti a rozhodnutí: [privacy.md](privacy.md).
 
 ## Sprint 9 — Onboarding a polish
 

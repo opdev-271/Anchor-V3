@@ -5,6 +5,8 @@ import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
 import '../../focus_session/application/focus_providers.dart';
+import '../../privacy/application/privacy_providers.dart';
+import '../../privacy/presentation/consent_gate.dart';
 import '../application/anchor_providers.dart';
 import 'anchor_pairing_sheet.dart';
 
@@ -41,6 +43,15 @@ class _AnchorsScreenState extends ConsumerState<AnchorsScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Bez souhlasu se maják neskenuje, takže nemá smysl ani kotvy zakládat
+    // (docs/spec.md §9).
+    if (!ref.watch(consentGrantedProvider(ConsentCategory.location))) {
+      return const ConsentRequestScreen(
+        title: 'Kotevní body',
+        category: ConsentCategory.location,
+      );
+    }
+
     final theme = Theme.of(context);
     final anchors = ref.watch(anchorsProvider);
 

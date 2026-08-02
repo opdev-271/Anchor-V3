@@ -97,6 +97,22 @@ class BlockingPlugin(private val context: Context) : MethodChannel.MethodCallHan
                 result.success(null)
             }
 
+            /**
+             * Zahodí veškerý nativní stav — prefs `kotva_blocking`,
+             * `kotva_limits` i `kotva_notif`.
+             *
+             * Volá se ze dvou míst: při smazání všech dat (docs/spec.md §9)
+             * a při odvolání souhlasu s kategorií `usage_stats`, protože limity
+             * vynucuje nativní vrstva a bez tohohle by hlídkovala dál i po
+             * odvolání souhlasu.
+             */
+            "clearNativeData" -> {
+                BlockingState.clear(context)
+                AppLimits.clear(context)
+                NotificationSuppressor.clear(context)
+                result.success(null)
+            }
+
             "isNotificationAccessGranted" ->
                 result.success(NotificationSuppressor.isPermissionGranted(context))
 

@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
+import '../../../core/storage/enums.dart';
 import '../../focus_session/application/focus_providers.dart';
+import '../../privacy/application/privacy_providers.dart';
+import '../../privacy/presentation/consent_gate.dart';
 import '../application/smart_home_providers.dart';
 import '../data/kasa_client.dart';
 
@@ -13,6 +16,15 @@ class SmartHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Přihlášení k účtu poskytovatele je jediné místo, kde Kotva komunikuje
+    // ven — bez souhlasu se nesmí nabídnout ani ono (docs/spec.md §9).
+    if (!ref.watch(consentGrantedProvider(ConsentCategory.smartHome))) {
+      return const ConsentRequestScreen(
+        title: 'Chytrá zásuvka',
+        category: ConsentCategory.smartHome,
+      );
+    }
+
     final theme = Theme.of(context);
     final token = ref.watch(kasaTokenProvider);
 

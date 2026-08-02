@@ -23,4 +23,17 @@ class ShareChannel {
       // zprávu má pořád na obrazovce a může ji zkopírovat.
     }
   }
+
+  /// Předá soubor systémovému výběru — použité pro export dat
+  /// (docs/spec.md §9, akceptační kritérium §14).
+  ///
+  /// Na rozdíl od [shareText] se selhání **nepolyká**: export je akce, jejíž
+  /// výsledek uživatel očekává v jiné aplikaci. Kdyby se sdílení nezdařilo
+  /// potichu, myslel by si, že data má, a přitom by neměl nic.
+  Future<void> shareFile(String path, {String? title}) {
+    return _channel.invokeMethod<void>('shareFile', {
+      'path': path,
+      'title': title,
+    });
+  }
 }

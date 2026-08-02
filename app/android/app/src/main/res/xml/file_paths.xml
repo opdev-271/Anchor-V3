@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cesty, které smí FileProvider vydat ven (docs/spec.md §9).
+
+     Záměrně jen `exporty/` v cache, ne celý adresář aplikace. Sdílet se má
+     výhradně soubor, který si uživatel sám vyžádal tlačítkem Exportovat —
+     databáze ani nic dalšího z app-private úložiště ven jít nesmí. -->
+<paths>
+    <cache-path name="exporty" path="exporty/" />
+</paths>

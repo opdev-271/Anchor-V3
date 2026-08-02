@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_spacing.dart';
+import '../../../core/storage/enums.dart';
 import '../../blocking/application/blocking_providers.dart';
 import '../../blocking/data/blocking_channel.dart';
 import '../../blocking/presentation/blocking_permission_card.dart';
+import '../../privacy/application/privacy_providers.dart';
+import '../../privacy/presentation/consent_gate.dart';
 
 final _todayUsageProvider = FutureProvider.autoDispose<List<AppUsage>>((ref) {
   return ref.watch(blockingChannelProvider).getTodayUsage();
@@ -50,6 +53,14 @@ class _ScreenTimeScreenState extends ConsumerState<ScreenTimeScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Bez souhlasu se čas v aplikacích vůbec nečte (docs/spec.md §9).
+    if (!ref.watch(consentGrantedProvider(ConsentCategory.usageStats))) {
+      return const ConsentRequestScreen(
+        title: 'Čas na obrazovce',
+        category: ConsentCategory.usageStats,
+      );
+    }
+
     final theme = Theme.of(context);
     final permissions = ref.watch(blockingPermissionsProvider).valueOrNull;
     final today = ref.watch(_todayUsageProvider);

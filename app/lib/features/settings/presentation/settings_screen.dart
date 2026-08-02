@@ -6,6 +6,7 @@ import '../../accountability/presentation/partners_screen.dart';
 import '../../anchor/presentation/anchors_screen.dart';
 import '../../app_limits/presentation/app_limits_screen.dart';
 import '../../blocking/presentation/blocked_lists_screen.dart';
+import '../../privacy/presentation/privacy_screen.dart';
 import '../../screen_time/presentation/screen_time_screen.dart';
 import '../../smart_home/presentation/smart_home_screen.dart';
 import '../../stats/presentation/stats_screen.dart';
@@ -113,6 +114,19 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
+
+          _SectionLabel('Soukromí'),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: const Text('Soukromí a data'),
+            subtitle: const Text(
+              'Souhlasy, připojená zařízení, export a smazání dat',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PrivacyScreen()),
+            ),
+          ),
 
           Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),

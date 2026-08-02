@@ -103,6 +103,22 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
+        <!-- Vydává soubor s exportem dat systémovému výběru (docs/spec.md §9).
+
+             `exported="false"` + `grantUriPermissions="true"`: k provideru se
+             nedostane žádná cizí aplikace sama od sebe, přístup dostane jen ta,
+             které uživatel export výslovně předá — a jen k tomu jednomu
+             souboru, jen na dobu intentu. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

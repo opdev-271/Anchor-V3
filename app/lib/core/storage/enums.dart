@@ -114,6 +114,36 @@ enum LimitIntensity {
       };
 }
 
+/// Kategorie citlivých dat, pro kterou se uděluje samostatný souhlas
+/// (docs/spec.md §9, docs/data-model.md → ConsentRecord).
+///
+/// Pořadí hodnot je perzistované jako index — **nikdy nepřeskupovat**.
+///
+/// Kategorie jsou záměrně tři a odpovídají tomu, co appka **skutečně** dělá.
+/// Souhlas, který nic neovlivní, je jen zaškrtávátko navíc; každá z těchhle
+/// kategorií proto při odvolání odpovídající funkci opravdu zastaví
+/// (viz `consent_providers.dart`).
+enum ConsentCategory {
+  /// Čtení času stráveného v aplikacích — přehled času na obrazovce
+  /// a denní limity.
+  usageStats,
+
+  /// Blízkost kotevního bodu. Kotva polohu **neurčuje**: sken majáku je
+  /// v manifestu označený `neverForLocation`. Kategorie se tak jmenuje kvůli
+  /// datovému modelu a kvůli tomu, že Android 11 a starší si na sken bez
+  /// polohového oprávnění neposvítí.
+  location,
+
+  /// Ovládání chytré zásuvky a přihlášení k účtu poskytovatele.
+  smartHome;
+
+  String get label => switch (this) {
+        ConsentCategory.usageStats => 'Čas v aplikacích',
+        ConsentCategory.location => 'Blízkost kotvy',
+        ConsentCategory.smartHome => 'Chytrá domácnost',
+      };
+}
+
 /// Typ zpomalovacího kroku ve Friction Exit (docs/spec.md §5.5).
 ///
 /// Pořadí hodnot je perzistované jako index — viz poznámka u [StrictnessLevel].

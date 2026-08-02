@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/storage/database.dart';
+import '../../../core/storage/enums.dart';
 import '../../blocking/application/blocking_providers.dart';
 import '../../blocking/data/blocking_channel.dart';
+import '../../privacy/application/privacy_providers.dart';
+import '../../privacy/presentation/consent_gate.dart';
 import '../application/app_limits_providers.dart';
 import 'limit_editor_sheet.dart';
 
@@ -40,6 +43,15 @@ class _AppLimitsScreenState extends ConsumerState<AppLimitsScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Limit se bez souhlasu nedá ani založit — vynucování stojí na čtení času
+    // stráveného v aplikaci (docs/spec.md §9).
+    if (!ref.watch(consentGrantedProvider(ConsentCategory.usageStats))) {
+      return const ConsentRequestScreen(
+        title: 'Denní limity',
+        category: ConsentCategory.usageStats,
+      );
+    }
+
     final theme = Theme.of(context);
     final limits = ref.watch(appLimitsProvider);
     final permissions = ref.watch(blockingPermissionsProvider).valueOrNull;

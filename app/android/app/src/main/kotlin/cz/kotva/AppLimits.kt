@@ -140,4 +140,12 @@ object AppLimits {
 
     fun usedMinutesToday(context: Context, packageName: String): Int =
         (UsageTracker.todayFor(context, packageName) / 60_000).toInt()
+
+    /**
+     * Zahodí limity i stav jejich čerpání — součást smazání všech dat
+     * (docs/spec.md §9) a odvolání souhlasu s kategorií `usage_stats`.
+     */
+    fun clear(context: Context) {
+        prefs(context).edit().clear().apply()
+    }
 }

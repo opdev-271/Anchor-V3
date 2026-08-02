@@ -4856,6 +4856,365 @@ class AccountabilityPartnersCompanion
   }
 }
 
+class $ConsentRecordsTable extends ConsentRecords
+    with TableInfo<$ConsentRecordsTable, ConsentRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ConsentRecordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _remoteIdMeta = const VerificationMeta(
+    'remoteId',
+  );
+  @override
+  late final GeneratedColumn<String> remoteId = GeneratedColumn<String>(
+    'remote_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<ConsentCategory, int> category =
+      GeneratedColumn<int>(
+        'category',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<ConsentCategory>($ConsentRecordsTable.$convertercategory);
+  static const VerificationMeta _grantedAtMeta = const VerificationMeta(
+    'grantedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> grantedAt = GeneratedColumn<DateTime>(
+    'granted_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _revokedAtMeta = const VerificationMeta(
+    'revokedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> revokedAt = GeneratedColumn<DateTime>(
+    'revoked_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    remoteId,
+    category,
+    grantedAt,
+    revokedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'consent_records';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ConsentRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('remote_id')) {
+      context.handle(
+        _remoteIdMeta,
+        remoteId.isAcceptableOrUnknown(data['remote_id']!, _remoteIdMeta),
+      );
+    }
+    if (data.containsKey('granted_at')) {
+      context.handle(
+        _grantedAtMeta,
+        grantedAt.isAcceptableOrUnknown(data['granted_at']!, _grantedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_grantedAtMeta);
+    }
+    if (data.containsKey('revoked_at')) {
+      context.handle(
+        _revokedAtMeta,
+        revokedAt.isAcceptableOrUnknown(data['revoked_at']!, _revokedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ConsentRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ConsentRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      remoteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_id'],
+      ),
+      category: $ConsentRecordsTable.$convertercategory.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}category'],
+        )!,
+      ),
+      grantedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}granted_at'],
+      )!,
+      revokedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}revoked_at'],
+      ),
+    );
+  }
+
+  @override
+  $ConsentRecordsTable createAlias(String alias) {
+    return $ConsentRecordsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<ConsentCategory, int, int> $convertercategory =
+      const EnumIndexConverter<ConsentCategory>(ConsentCategory.values);
+}
+
+class ConsentRecord extends DataClass implements Insertable<ConsentRecord> {
+  final int id;
+  final String? remoteId;
+  final ConsentCategory category;
+  final DateTime grantedAt;
+  final DateTime? revokedAt;
+  const ConsentRecord({
+    required this.id,
+    this.remoteId,
+    required this.category,
+    required this.grantedAt,
+    this.revokedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || remoteId != null) {
+      map['remote_id'] = Variable<String>(remoteId);
+    }
+    {
+      map['category'] = Variable<int>(
+        $ConsentRecordsTable.$convertercategory.toSql(category),
+      );
+    }
+    map['granted_at'] = Variable<DateTime>(grantedAt);
+    if (!nullToAbsent || revokedAt != null) {
+      map['revoked_at'] = Variable<DateTime>(revokedAt);
+    }
+    return map;
+  }
+
+  ConsentRecordsCompanion toCompanion(bool nullToAbsent) {
+    return ConsentRecordsCompanion(
+      id: Value(id),
+      remoteId: remoteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteId),
+      category: Value(category),
+      grantedAt: Value(grantedAt),
+      revokedAt: revokedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(revokedAt),
+    );
+  }
+
+  factory ConsentRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ConsentRecord(
+      id: serializer.fromJson<int>(json['id']),
+      remoteId: serializer.fromJson<String?>(json['remoteId']),
+      category: $ConsentRecordsTable.$convertercategory.fromJson(
+        serializer.fromJson<int>(json['category']),
+      ),
+      grantedAt: serializer.fromJson<DateTime>(json['grantedAt']),
+      revokedAt: serializer.fromJson<DateTime?>(json['revokedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'remoteId': serializer.toJson<String?>(remoteId),
+      'category': serializer.toJson<int>(
+        $ConsentRecordsTable.$convertercategory.toJson(category),
+      ),
+      'grantedAt': serializer.toJson<DateTime>(grantedAt),
+      'revokedAt': serializer.toJson<DateTime?>(revokedAt),
+    };
+  }
+
+  ConsentRecord copyWith({
+    int? id,
+    Value<String?> remoteId = const Value.absent(),
+    ConsentCategory? category,
+    DateTime? grantedAt,
+    Value<DateTime?> revokedAt = const Value.absent(),
+  }) => ConsentRecord(
+    id: id ?? this.id,
+    remoteId: remoteId.present ? remoteId.value : this.remoteId,
+    category: category ?? this.category,
+    grantedAt: grantedAt ?? this.grantedAt,
+    revokedAt: revokedAt.present ? revokedAt.value : this.revokedAt,
+  );
+  ConsentRecord copyWithCompanion(ConsentRecordsCompanion data) {
+    return ConsentRecord(
+      id: data.id.present ? data.id.value : this.id,
+      remoteId: data.remoteId.present ? data.remoteId.value : this.remoteId,
+      category: data.category.present ? data.category.value : this.category,
+      grantedAt: data.grantedAt.present ? data.grantedAt.value : this.grantedAt,
+      revokedAt: data.revokedAt.present ? data.revokedAt.value : this.revokedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ConsentRecord(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('category: $category, ')
+          ..write('grantedAt: $grantedAt, ')
+          ..write('revokedAt: $revokedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, remoteId, category, grantedAt, revokedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ConsentRecord &&
+          other.id == this.id &&
+          other.remoteId == this.remoteId &&
+          other.category == this.category &&
+          other.grantedAt == this.grantedAt &&
+          other.revokedAt == this.revokedAt);
+}
+
+class ConsentRecordsCompanion extends UpdateCompanion<ConsentRecord> {
+  final Value<int> id;
+  final Value<String?> remoteId;
+  final Value<ConsentCategory> category;
+  final Value<DateTime> grantedAt;
+  final Value<DateTime?> revokedAt;
+  const ConsentRecordsCompanion({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    this.category = const Value.absent(),
+    this.grantedAt = const Value.absent(),
+    this.revokedAt = const Value.absent(),
+  });
+  ConsentRecordsCompanion.insert({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    required ConsentCategory category,
+    required DateTime grantedAt,
+    this.revokedAt = const Value.absent(),
+  }) : category = Value(category),
+       grantedAt = Value(grantedAt);
+  static Insertable<ConsentRecord> custom({
+    Expression<int>? id,
+    Expression<String>? remoteId,
+    Expression<int>? category,
+    Expression<DateTime>? grantedAt,
+    Expression<DateTime>? revokedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (remoteId != null) 'remote_id': remoteId,
+      if (category != null) 'category': category,
+      if (grantedAt != null) 'granted_at': grantedAt,
+      if (revokedAt != null) 'revoked_at': revokedAt,
+    });
+  }
+
+  ConsentRecordsCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? remoteId,
+    Value<ConsentCategory>? category,
+    Value<DateTime>? grantedAt,
+    Value<DateTime?>? revokedAt,
+  }) {
+    return ConsentRecordsCompanion(
+      id: id ?? this.id,
+      remoteId: remoteId ?? this.remoteId,
+      category: category ?? this.category,
+      grantedAt: grantedAt ?? this.grantedAt,
+      revokedAt: revokedAt ?? this.revokedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (remoteId.present) {
+      map['remote_id'] = Variable<String>(remoteId.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<int>(
+        $ConsentRecordsTable.$convertercategory.toSql(category.value),
+      );
+    }
+    if (grantedAt.present) {
+      map['granted_at'] = Variable<DateTime>(grantedAt.value);
+    }
+    if (revokedAt.present) {
+      map['revoked_at'] = Variable<DateTime>(revokedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ConsentRecordsCompanion(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('category: $category, ')
+          ..write('grantedAt: $grantedAt, ')
+          ..write('revokedAt: $revokedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4875,6 +5234,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AnchorEventsTable anchorEvents = $AnchorEventsTable(this);
   late final $AccountabilityPartnersTable accountabilityPartners =
       $AccountabilityPartnersTable(this);
+  late final $ConsentRecordsTable consentRecords = $ConsentRecordsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4891,6 +5251,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appUsageLimits,
     anchorEvents,
     accountabilityPartners,
+    consentRecords,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -9373,6 +9734,203 @@ typedef $$AccountabilityPartnersTableProcessedTableManager =
       AccountabilityPartner,
       PrefetchHooks Function()
     >;
+typedef $$ConsentRecordsTableCreateCompanionBuilder =
+    ConsentRecordsCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      required ConsentCategory category,
+      required DateTime grantedAt,
+      Value<DateTime?> revokedAt,
+    });
+typedef $$ConsentRecordsTableUpdateCompanionBuilder =
+    ConsentRecordsCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      Value<ConsentCategory> category,
+      Value<DateTime> grantedAt,
+      Value<DateTime?> revokedAt,
+    });
+
+class $$ConsentRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $ConsentRecordsTable> {
+  $$ConsentRecordsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<ConsentCategory, ConsentCategory, int>
+  get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get grantedAt => $composableBuilder(
+    column: $table.grantedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get revokedAt => $composableBuilder(
+    column: $table.revokedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ConsentRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ConsentRecordsTable> {
+  $$ConsentRecordsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get grantedAt => $composableBuilder(
+    column: $table.grantedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get revokedAt => $composableBuilder(
+    column: $table.revokedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ConsentRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ConsentRecordsTable> {
+  $$ConsentRecordsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteId =>
+      $composableBuilder(column: $table.remoteId, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<ConsentCategory, int> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get grantedAt =>
+      $composableBuilder(column: $table.grantedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get revokedAt =>
+      $composableBuilder(column: $table.revokedAt, builder: (column) => column);
+}
+
+class $$ConsentRecordsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ConsentRecordsTable,
+          ConsentRecord,
+          $$ConsentRecordsTableFilterComposer,
+          $$ConsentRecordsTableOrderingComposer,
+          $$ConsentRecordsTableAnnotationComposer,
+          $$ConsentRecordsTableCreateCompanionBuilder,
+          $$ConsentRecordsTableUpdateCompanionBuilder,
+          (
+            ConsentRecord,
+            BaseReferences<_$AppDatabase, $ConsentRecordsTable, ConsentRecord>,
+          ),
+          ConsentRecord,
+          PrefetchHooks Function()
+        > {
+  $$ConsentRecordsTableTableManager(
+    _$AppDatabase db,
+    $ConsentRecordsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ConsentRecordsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ConsentRecordsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ConsentRecordsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                Value<ConsentCategory> category = const Value.absent(),
+                Value<DateTime> grantedAt = const Value.absent(),
+                Value<DateTime?> revokedAt = const Value.absent(),
+              }) => ConsentRecordsCompanion(
+                id: id,
+                remoteId: remoteId,
+                category: category,
+                grantedAt: grantedAt,
+                revokedAt: revokedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                required ConsentCategory category,
+                required DateTime grantedAt,
+                Value<DateTime?> revokedAt = const Value.absent(),
+              }) => ConsentRecordsCompanion.insert(
+                id: id,
+                remoteId: remoteId,
+                category: category,
+                grantedAt: grantedAt,
+                revokedAt: revokedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ConsentRecordsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ConsentRecordsTable,
+      ConsentRecord,
+      $$ConsentRecordsTableFilterComposer,
+      $$ConsentRecordsTableOrderingComposer,
+      $$ConsentRecordsTableAnnotationComposer,
+      $$ConsentRecordsTableCreateCompanionBuilder,
+      $$ConsentRecordsTableUpdateCompanionBuilder,
+      (
+        ConsentRecord,
+        BaseReferences<_$AppDatabase, $ConsentRecordsTable, ConsentRecord>,
+      ),
+      ConsentRecord,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9402,4 +9960,6 @@ class $AppDatabaseManager {
         _db,
         _db.accountabilityPartners,
       );
+  $$ConsentRecordsTableTableManager get consentRecords =>
+      $$ConsentRecordsTableTableManager(_db, _db.consentRecords);
 }
