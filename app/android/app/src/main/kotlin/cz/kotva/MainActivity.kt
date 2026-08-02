@@ -17,5 +17,8 @@ class MainActivity : FlutterActivity() {
         // spustit jen z popředí aplikace.
         val anchorChannel = MethodChannel(messenger, AnchorPlugin.CHANNEL)
         anchorChannel.setMethodCallHandler(AnchorPlugin(this, anchorChannel))
+
+        MethodChannel(messenger, SharePlugin.CHANNEL)
+            .setMethodCallHandler(SharePlugin(this))
     }
 }

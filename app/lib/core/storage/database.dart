@@ -27,6 +27,7 @@ part 'database.g.dart';
     AnchorPoints,
     AnchorEvents,
     SmartDevices,
+    AccountabilityPartners,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -36,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -70,6 +71,11 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(smartDevices);
             await m.addColumn(focusProfiles, focusProfiles.smartDeviceId);
           }
+          if (from < 7) {
+            // Sprint 7 — accountability (docs/spec.md §5.4).
+            await m.createTable(accountabilityPartners);
+            await m.addColumn(focusProfiles, focusProfiles.notifyPartner);
+          }
         },
         beforeOpen: (details) async {
           // Bez tohohle SQLite cizí klíče ignoruje a `onDelete: cascade`
@@ -98,6 +104,7 @@ class AppDatabase extends _$AppDatabase {
     required StrictnessLevel strictness,
     int? anchorPointId,
     int? smartDeviceId,
+    bool notifyPartner = false,
   }) {
     final now = DateTime.now();
     return into(focusProfiles).insert(
@@ -108,6 +115,7 @@ class AppDatabase extends _$AppDatabase {
         goalText: Value(goalText),
         anchorPointId: Value(anchorPointId),
         smartDeviceId: Value(smartDeviceId),
+        notifyPartner: Value(notifyPartner),
         createdAt: now,
         updatedAt: now,
       ),
@@ -122,6 +130,7 @@ class AppDatabase extends _$AppDatabase {
     required StrictnessLevel strictness,
     int? anchorPointId,
     int? smartDeviceId,
+    bool notifyPartner = false,
   }) {
     return (update(focusProfiles)..where((t) => t.id.equals(id))).write(
       FocusProfilesCompanion(
@@ -133,6 +142,7 @@ class AppDatabase extends _$AppDatabase {
         // ne tiše přeskočit jako „nezměněno".
         anchorPointId: Value(anchorPointId),
         smartDeviceId: Value(smartDeviceId),
+        notifyPartner: Value(notifyPartner),
         updatedAt: Value(DateTime.now()),
       ),
     );
@@ -362,6 +372,31 @@ class AppDatabase extends _$AppDatabase {
       ..where(profileBlockedLists.profileId.equals(profileId));
     final rows = await query.get();
     return rows.map((r) => r.read(blockedApps.packageName)!).toList();
+  }
+
+  // --- Accountability parťáci ---
+
+  Stream<List<AccountabilityPartner>> watchPartners() {
+    return (select(accountabilityPartners)
+          ..orderBy([(t) => OrderingTerm.asc(t.name)]))
+        .watch();
+  }
+
+  Future<List<AccountabilityPartner>> allPartners() =>
+      select(accountabilityPartners).get();
+
+  Future<int> addPartner({required String name, String? contact}) {
+    return into(accountabilityPartners).insert(
+      AccountabilityPartnersCompanion.insert(
+        name: name,
+        contact: Value(contact),
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<void> deletePartner(int id) {
+    return (delete(accountabilityPartners)..where((t) => t.id.equals(id))).go();
   }
 
   // --- Chytrá zařízení ---

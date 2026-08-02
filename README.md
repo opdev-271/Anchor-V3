@@ -18,7 +18,8 @@ tím, že ztíží útěk nejen do telefonu, ale i do reálných úniků — kom
 | 4 | Statistiky — kdy fokus drží nejlíp | ✅ |
 | 5 | Kotevní body — Bluetooth maják a NFC štítek | ✅ |
 | 6 | Chytrá zásuvka (TP-Link Kasa) | ✅ kód, spínání neověřeno bez hardwaru |
-| 7–10 | Accountability, soukromí, onboarding | ⬜ |
+| 7 | Accountability — parťák a zpráva po bloku | ✅ lokální část; sdílení čeká na backend |
+| 8–10 | Soukromí, onboarding, akceptační průchod | ⬜ |
 
 Podrobně v [docs/roadmap.md](docs/roadmap.md).
 
@@ -34,6 +35,7 @@ Podrobně v [docs/roadmap.md](docs/roadmap.md).
 | [docs/app-limits.md](docs/app-limits.md) | Denní limity aplikací a čas na obrazovce |
 | [docs/anchors.md](docs/anchors.md) | Kotevní body — spotřeba baterie a limity BLE/NFC |
 | [docs/smart-home.md](docs/smart-home.md) | Chytrá zásuvka přes TP-Link Kasa |
+| [docs/accountability.md](docs/accountability.md) | Parťáci — hranice soukromí a co čeká na backend |
 | [docs/post-mvp.md](docs/post-mvp.md) | Odložené funkce |
 
 ## Technologie

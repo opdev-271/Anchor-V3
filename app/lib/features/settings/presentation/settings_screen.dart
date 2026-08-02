@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design_system/app_spacing.dart';
+import '../../accountability/presentation/partners_screen.dart';
 import '../../anchor/presentation/anchors_screen.dart';
 import '../../app_limits/presentation/app_limits_screen.dart';
 import '../../blocking/presentation/blocked_lists_screen.dart';
@@ -82,6 +83,15 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const AnchorsScreen()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.group_outlined),
+            title: const Text('Parťáci'),
+            subtitle: const Text('Dát vědět, že jsi pracoval/a'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PartnersScreen()),
             ),
           ),
           ListTile(

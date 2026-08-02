@@ -45,6 +45,9 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
   /// Chytrá zásuvka, která se má během bloku vypnout. `null` = žádná.
   int? _smartDeviceId;
 
+  /// Po skončení bloku nabídnout odeslání zprávy parťákovi (§5.4).
+  bool _notifyPartner = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +59,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
 
     _anchorPointId = p?.anchorPointId;
     _smartDeviceId = p?.smartDeviceId;
+    _notifyPartner = p?.notifyPartner ?? false;
 
     if (p != null) {
       ref.read(databaseProvider).listIdsForProfile(p.id).then((ids) {
@@ -211,6 +215,21 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
               selectedId: _smartDeviceId,
               onChanged: (id) => setState(() => _smartDeviceId = id),
             ),
+            const SizedBox(height: AppSpacing.md),
+
+            Text('Parťák', style: theme.textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.sm),
+            Card(
+              child: SwitchListTile(
+                value: _notifyPartner,
+                onChanged: (v) => setState(() => _notifyPartner = v),
+                title: const Text('Nabídnout zprávu po bloku'),
+                subtitle: const Text(
+                  'Kotva připraví text, odeslat ho můžeš ty. Parťák se '
+                  'nedozví tvůj cíl.',
+                ),
+              ),
+            ),
             const SizedBox(height: AppSpacing.xl),
 
             FilledButton(
@@ -240,6 +259,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
         strictness: _strictness,
         anchorPointId: _anchorPointId,
         smartDeviceId: _smartDeviceId,
+        notifyPartner: _notifyPartner,
       );
     } else {
       profileId = await db.createProfile(
@@ -249,6 +269,7 @@ class _ProfileEditorScreenState extends ConsumerState<ProfileEditorScreen> {
         strictness: _strictness,
         anchorPointId: _anchorPointId,
         smartDeviceId: _smartDeviceId,
+        notifyPartner: _notifyPartner,
       );
     }
     await db.setListsForProfile(profileId, _selectedListIds);

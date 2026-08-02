@@ -7,6 +7,7 @@ import '../../../core/design_system/progress_ring.dart';
 import '../../../core/design_system/screen_body.dart';
 import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
+import '../../accountability/application/accountability_providers.dart';
 import '../../anchor/application/anchor_providers.dart';
 import '../../anchor/presentation/return_prompt_sheet.dart';
 import '../../friction_exit/presentation/friction_exit_screen.dart';
@@ -212,6 +213,33 @@ class _ActiveView extends ConsumerWidget {
   }
 }
 
+/// Nabídka dát vědět parťákovi (docs/spec.md §5.4).
+///
+/// Objeví se jen když si to uživatel u profilu zapnul a má aspoň jednoho
+/// parťáka. Je to **nabídka**, ne automatické odeslání — zprávu odešle až
+/// uživatel ve zvolené aplikaci.
+class _PartnerOffer extends ConsumerWidget {
+  const _PartnerOffer({required this.session});
+
+  final FocusSession session;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(accountabilityControllerProvider);
+    return FutureBuilder<bool>(
+      future: controller.shouldOfferUpdate(session),
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return TextButton.icon(
+          onPressed: () => controller.shareUpdate(session),
+          icon: const Icon(Icons.send_outlined),
+          label: const Text('Dát vědět parťákovi'),
+        );
+      },
+    );
+  }
+}
+
 /// Uzavření bloku — dokončeného i přerušeného.
 ///
 /// Tón obou variant je podporující (§11). Přerušený blok **není** označen
@@ -257,6 +285,8 @@ class _ClosingView extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Zpět na přehled'),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          _PartnerOffer(session: session),
         ],
       ),
     );

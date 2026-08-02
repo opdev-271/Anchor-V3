@@ -38,6 +38,15 @@ class FocusProfiles extends Table {
       .nullable()
       .references(SmartDevices, #id, onDelete: KeyAction.setNull)();
 
+  /// „Jemná sázka" z docs/spec.md §5.4: po skončení bloku aplikace **nabídne**
+  /// odeslat zprávu parťákovi.
+  ///
+  /// Nabídne, ne odešle. Automatické odeslání bez potvrzení by bylo jednání
+  /// za uživatele navenek — a to si aplikace, která má respektovat jeho
+  /// autonomii (§11), dovolit nemůže.
+  BoolColumn get notifyPartner =>
+      boolean().withDefault(const Constant(false))();
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 }
@@ -114,6 +123,24 @@ class BlockedApps extends Table {
   List<Set<Column>> get uniqueKeys => [
         {listId, packageName},
       ];
+}
+
+/// Accountability parťák (docs/data-model.md → AccountabilityPartner,
+/// docs/spec.md §5.4).
+///
+/// Zatím žije **jen v telefonu uživatele**. Skutečné spárování dvou účtů
+/// vyžaduje backend, který ještě není — viz docs/accountability.md. Do té doby
+/// slouží záznam k tomu, aby appka věděla, komu nabídnout zprávu po bloku.
+class AccountabilityPartners extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get remoteId => text().nullable()();
+  TextColumn get name => text().withLength(min: 1, max: 60)();
+
+  /// E-mail nebo telefon. Nepovinné — zpráva se dá odeslat i výběrem
+  /// kontaktu až v aplikaci, kterou uživatel použije ke sdílení.
+  TextColumn get contact => text().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
 }
 
 /// Chytré zařízení, které se má během bloku vypnout (docs/data-model.md →

@@ -1073,6 +1073,21 @@ class $FocusProfilesTable extends FocusProfiles
       'REFERENCES smart_devices (id) ON DELETE SET NULL',
     ),
   );
+  static const VerificationMeta _notifyPartnerMeta = const VerificationMeta(
+    'notifyPartner',
+  );
+  @override
+  late final GeneratedColumn<bool> notifyPartner = GeneratedColumn<bool>(
+    'notify_partner',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("notify_partner" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1105,6 +1120,7 @@ class $FocusProfilesTable extends FocusProfiles
     strictness,
     anchorPointId,
     smartDeviceId,
+    notifyPartner,
     createdAt,
     updatedAt,
   ];
@@ -1172,6 +1188,15 @@ class $FocusProfilesTable extends FocusProfiles
         ),
       );
     }
+    if (data.containsKey('notify_partner')) {
+      context.handle(
+        _notifyPartnerMeta,
+        notifyPartner.isAcceptableOrUnknown(
+          data['notify_partner']!,
+          _notifyPartnerMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1231,6 +1256,10 @@ class $FocusProfilesTable extends FocusProfiles
         DriftSqlType.int,
         data['${effectivePrefix}smart_device_id'],
       ),
+      notifyPartner: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}notify_partner'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1272,6 +1301,14 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
   /// Chytrá zásuvka, která se má během bloku vypnout. Také nepovinná —
   /// bez zařízení musí zbytek aplikace fungovat beze změny (docs/spec.md §8).
   final int? smartDeviceId;
+
+  /// „Jemná sázka" z docs/spec.md §5.4: po skončení bloku aplikace **nabídne**
+  /// odeslat zprávu parťákovi.
+  ///
+  /// Nabídne, ne odešle. Automatické odeslání bez potvrzení by bylo jednání
+  /// za uživatele navenek — a to si aplikace, která má respektovat jeho
+  /// autonomii (§11), dovolit nemůže.
+  final bool notifyPartner;
   final DateTime createdAt;
   final DateTime updatedAt;
   const FocusProfile({
@@ -1283,6 +1320,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     required this.strictness,
     this.anchorPointId,
     this.smartDeviceId,
+    required this.notifyPartner,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -1307,6 +1345,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     if (!nullToAbsent || smartDeviceId != null) {
       map['smart_device_id'] = Variable<int>(smartDeviceId);
     }
+    map['notify_partner'] = Variable<bool>(notifyPartner);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -1328,6 +1367,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       smartDeviceId: smartDeviceId == null && nullToAbsent
           ? const Value.absent()
           : Value(smartDeviceId),
+      notifyPartner: Value(notifyPartner),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -1349,6 +1389,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       ),
       anchorPointId: serializer.fromJson<int?>(json['anchorPointId']),
       smartDeviceId: serializer.fromJson<int?>(json['smartDeviceId']),
+      notifyPartner: serializer.fromJson<bool>(json['notifyPartner']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1367,6 +1408,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       ),
       'anchorPointId': serializer.toJson<int?>(anchorPointId),
       'smartDeviceId': serializer.toJson<int?>(smartDeviceId),
+      'notifyPartner': serializer.toJson<bool>(notifyPartner),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1381,6 +1423,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     StrictnessLevel? strictness,
     Value<int?> anchorPointId = const Value.absent(),
     Value<int?> smartDeviceId = const Value.absent(),
+    bool? notifyPartner,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => FocusProfile(
@@ -1396,6 +1439,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     smartDeviceId: smartDeviceId.present
         ? smartDeviceId.value
         : this.smartDeviceId,
+    notifyPartner: notifyPartner ?? this.notifyPartner,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -1417,6 +1461,9 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
       smartDeviceId: data.smartDeviceId.present
           ? data.smartDeviceId.value
           : this.smartDeviceId,
+      notifyPartner: data.notifyPartner.present
+          ? data.notifyPartner.value
+          : this.notifyPartner,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1433,6 +1480,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
           ..write('strictness: $strictness, ')
           ..write('anchorPointId: $anchorPointId, ')
           ..write('smartDeviceId: $smartDeviceId, ')
+          ..write('notifyPartner: $notifyPartner, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1449,6 +1497,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
     strictness,
     anchorPointId,
     smartDeviceId,
+    notifyPartner,
     createdAt,
     updatedAt,
   );
@@ -1464,6 +1513,7 @@ class FocusProfile extends DataClass implements Insertable<FocusProfile> {
           other.strictness == this.strictness &&
           other.anchorPointId == this.anchorPointId &&
           other.smartDeviceId == this.smartDeviceId &&
+          other.notifyPartner == this.notifyPartner &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1477,6 +1527,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
   final Value<StrictnessLevel> strictness;
   final Value<int?> anchorPointId;
   final Value<int?> smartDeviceId;
+  final Value<bool> notifyPartner;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const FocusProfilesCompanion({
@@ -1488,6 +1539,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     this.strictness = const Value.absent(),
     this.anchorPointId = const Value.absent(),
     this.smartDeviceId = const Value.absent(),
+    this.notifyPartner = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -1500,6 +1552,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     required StrictnessLevel strictness,
     this.anchorPointId = const Value.absent(),
     this.smartDeviceId = const Value.absent(),
+    this.notifyPartner = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : name = Value(name),
@@ -1516,6 +1569,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     Expression<int>? strictness,
     Expression<int>? anchorPointId,
     Expression<int>? smartDeviceId,
+    Expression<bool>? notifyPartner,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -1528,6 +1582,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
       if (strictness != null) 'strictness': strictness,
       if (anchorPointId != null) 'anchor_point_id': anchorPointId,
       if (smartDeviceId != null) 'smart_device_id': smartDeviceId,
+      if (notifyPartner != null) 'notify_partner': notifyPartner,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -1542,6 +1597,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     Value<StrictnessLevel>? strictness,
     Value<int?>? anchorPointId,
     Value<int?>? smartDeviceId,
+    Value<bool>? notifyPartner,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
   }) {
@@ -1554,6 +1610,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
       strictness: strictness ?? this.strictness,
       anchorPointId: anchorPointId ?? this.anchorPointId,
       smartDeviceId: smartDeviceId ?? this.smartDeviceId,
+      notifyPartner: notifyPartner ?? this.notifyPartner,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -1588,6 +1645,9 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
     if (smartDeviceId.present) {
       map['smart_device_id'] = Variable<int>(smartDeviceId.value);
     }
+    if (notifyPartner.present) {
+      map['notify_partner'] = Variable<bool>(notifyPartner.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1608,6 +1668,7 @@ class FocusProfilesCompanion extends UpdateCompanion<FocusProfile> {
           ..write('strictness: $strictness, ')
           ..write('anchorPointId: $anchorPointId, ')
           ..write('smartDeviceId: $smartDeviceId, ')
+          ..write('notifyPartner: $notifyPartner, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -4432,6 +4493,369 @@ class AnchorEventsCompanion extends UpdateCompanion<AnchorEvent> {
   }
 }
 
+class $AccountabilityPartnersTable extends AccountabilityPartners
+    with TableInfo<$AccountabilityPartnersTable, AccountabilityPartner> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AccountabilityPartnersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _remoteIdMeta = const VerificationMeta(
+    'remoteId',
+  );
+  @override
+  late final GeneratedColumn<String> remoteId = GeneratedColumn<String>(
+    'remote_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 60,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contactMeta = const VerificationMeta(
+    'contact',
+  );
+  @override
+  late final GeneratedColumn<String> contact = GeneratedColumn<String>(
+    'contact',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    remoteId,
+    name,
+    contact,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'accountability_partners';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AccountabilityPartner> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('remote_id')) {
+      context.handle(
+        _remoteIdMeta,
+        remoteId.isAcceptableOrUnknown(data['remote_id']!, _remoteIdMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('contact')) {
+      context.handle(
+        _contactMeta,
+        contact.isAcceptableOrUnknown(data['contact']!, _contactMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AccountabilityPartner map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AccountabilityPartner(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      remoteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_id'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      contact: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contact'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AccountabilityPartnersTable createAlias(String alias) {
+    return $AccountabilityPartnersTable(attachedDatabase, alias);
+  }
+}
+
+class AccountabilityPartner extends DataClass
+    implements Insertable<AccountabilityPartner> {
+  final int id;
+  final String? remoteId;
+  final String name;
+
+  /// E-mail nebo telefon. Nepovinné — zpráva se dá odeslat i výběrem
+  /// kontaktu až v aplikaci, kterou uživatel použije ke sdílení.
+  final String? contact;
+  final DateTime createdAt;
+  const AccountabilityPartner({
+    required this.id,
+    this.remoteId,
+    required this.name,
+    this.contact,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || remoteId != null) {
+      map['remote_id'] = Variable<String>(remoteId);
+    }
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || contact != null) {
+      map['contact'] = Variable<String>(contact);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  AccountabilityPartnersCompanion toCompanion(bool nullToAbsent) {
+    return AccountabilityPartnersCompanion(
+      id: Value(id),
+      remoteId: remoteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteId),
+      name: Value(name),
+      contact: contact == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contact),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory AccountabilityPartner.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AccountabilityPartner(
+      id: serializer.fromJson<int>(json['id']),
+      remoteId: serializer.fromJson<String?>(json['remoteId']),
+      name: serializer.fromJson<String>(json['name']),
+      contact: serializer.fromJson<String?>(json['contact']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'remoteId': serializer.toJson<String?>(remoteId),
+      'name': serializer.toJson<String>(name),
+      'contact': serializer.toJson<String?>(contact),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  AccountabilityPartner copyWith({
+    int? id,
+    Value<String?> remoteId = const Value.absent(),
+    String? name,
+    Value<String?> contact = const Value.absent(),
+    DateTime? createdAt,
+  }) => AccountabilityPartner(
+    id: id ?? this.id,
+    remoteId: remoteId.present ? remoteId.value : this.remoteId,
+    name: name ?? this.name,
+    contact: contact.present ? contact.value : this.contact,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  AccountabilityPartner copyWithCompanion(
+    AccountabilityPartnersCompanion data,
+  ) {
+    return AccountabilityPartner(
+      id: data.id.present ? data.id.value : this.id,
+      remoteId: data.remoteId.present ? data.remoteId.value : this.remoteId,
+      name: data.name.present ? data.name.value : this.name,
+      contact: data.contact.present ? data.contact.value : this.contact,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AccountabilityPartner(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('name: $name, ')
+          ..write('contact: $contact, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, remoteId, name, contact, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AccountabilityPartner &&
+          other.id == this.id &&
+          other.remoteId == this.remoteId &&
+          other.name == this.name &&
+          other.contact == this.contact &&
+          other.createdAt == this.createdAt);
+}
+
+class AccountabilityPartnersCompanion
+    extends UpdateCompanion<AccountabilityPartner> {
+  final Value<int> id;
+  final Value<String?> remoteId;
+  final Value<String> name;
+  final Value<String?> contact;
+  final Value<DateTime> createdAt;
+  const AccountabilityPartnersCompanion({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.contact = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  AccountabilityPartnersCompanion.insert({
+    this.id = const Value.absent(),
+    this.remoteId = const Value.absent(),
+    required String name,
+    this.contact = const Value.absent(),
+    required DateTime createdAt,
+  }) : name = Value(name),
+       createdAt = Value(createdAt);
+  static Insertable<AccountabilityPartner> custom({
+    Expression<int>? id,
+    Expression<String>? remoteId,
+    Expression<String>? name,
+    Expression<String>? contact,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (remoteId != null) 'remote_id': remoteId,
+      if (name != null) 'name': name,
+      if (contact != null) 'contact': contact,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  AccountabilityPartnersCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? remoteId,
+    Value<String>? name,
+    Value<String?>? contact,
+    Value<DateTime>? createdAt,
+  }) {
+    return AccountabilityPartnersCompanion(
+      id: id ?? this.id,
+      remoteId: remoteId ?? this.remoteId,
+      name: name ?? this.name,
+      contact: contact ?? this.contact,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (remoteId.present) {
+      map['remote_id'] = Variable<String>(remoteId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (contact.present) {
+      map['contact'] = Variable<String>(contact.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AccountabilityPartnersCompanion(')
+          ..write('id: $id, ')
+          ..write('remoteId: $remoteId, ')
+          ..write('name: $name, ')
+          ..write('contact: $contact, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4449,6 +4873,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $FrictionExitEventsTable(this);
   late final $AppUsageLimitsTable appUsageLimits = $AppUsageLimitsTable(this);
   late final $AnchorEventsTable anchorEvents = $AnchorEventsTable(this);
+  late final $AccountabilityPartnersTable accountabilityPartners =
+      $AccountabilityPartnersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4464,6 +4890,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     frictionExitEvents,
     appUsageLimits,
     anchorEvents,
+    accountabilityPartners,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -5321,6 +5748,7 @@ typedef $$FocusProfilesTableCreateCompanionBuilder =
       required StrictnessLevel strictness,
       Value<int?> anchorPointId,
       Value<int?> smartDeviceId,
+      Value<bool> notifyPartner,
       required DateTime createdAt,
       required DateTime updatedAt,
     });
@@ -5334,6 +5762,7 @@ typedef $$FocusProfilesTableUpdateCompanionBuilder =
       Value<StrictnessLevel> strictness,
       Value<int?> anchorPointId,
       Value<int?> smartDeviceId,
+      Value<bool> notifyPartner,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
     });
@@ -5463,6 +5892,11 @@ class $$FocusProfilesTableFilterComposer
   get strictness => $composableBuilder(
     column: $table.strictness,
     builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<bool> get notifyPartner => $composableBuilder(
+    column: $table.notifyPartner,
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
@@ -5611,6 +6045,11 @@ class $$FocusProfilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get notifyPartner => $composableBuilder(
+    column: $table.notifyPartner,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5699,6 +6138,11 @@ class $$FocusProfilesTableAnnotationComposer
         column: $table.strictness,
         builder: (column) => column,
       );
+
+  GeneratedColumn<bool> get notifyPartner => $composableBuilder(
+    column: $table.notifyPartner,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -5845,6 +6289,7 @@ class $$FocusProfilesTableTableManager
                 Value<StrictnessLevel> strictness = const Value.absent(),
                 Value<int?> anchorPointId = const Value.absent(),
                 Value<int?> smartDeviceId = const Value.absent(),
+                Value<bool> notifyPartner = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => FocusProfilesCompanion(
@@ -5856,6 +6301,7 @@ class $$FocusProfilesTableTableManager
                 strictness: strictness,
                 anchorPointId: anchorPointId,
                 smartDeviceId: smartDeviceId,
+                notifyPartner: notifyPartner,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -5869,6 +6315,7 @@ class $$FocusProfilesTableTableManager
                 required StrictnessLevel strictness,
                 Value<int?> anchorPointId = const Value.absent(),
                 Value<int?> smartDeviceId = const Value.absent(),
+                Value<bool> notifyPartner = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
               }) => FocusProfilesCompanion.insert(
@@ -5880,6 +6327,7 @@ class $$FocusProfilesTableTableManager
                 strictness: strictness,
                 anchorPointId: anchorPointId,
                 smartDeviceId: smartDeviceId,
+                notifyPartner: notifyPartner,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -8712,6 +9160,219 @@ typedef $$AnchorEventsTableProcessedTableManager =
       AnchorEvent,
       PrefetchHooks Function({bool anchorPointId, bool sessionId})
     >;
+typedef $$AccountabilityPartnersTableCreateCompanionBuilder =
+    AccountabilityPartnersCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      required String name,
+      Value<String?> contact,
+      required DateTime createdAt,
+    });
+typedef $$AccountabilityPartnersTableUpdateCompanionBuilder =
+    AccountabilityPartnersCompanion Function({
+      Value<int> id,
+      Value<String?> remoteId,
+      Value<String> name,
+      Value<String?> contact,
+      Value<DateTime> createdAt,
+    });
+
+class $$AccountabilityPartnersTableFilterComposer
+    extends Composer<_$AppDatabase, $AccountabilityPartnersTable> {
+  $$AccountabilityPartnersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contact => $composableBuilder(
+    column: $table.contact,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AccountabilityPartnersTableOrderingComposer
+    extends Composer<_$AppDatabase, $AccountabilityPartnersTable> {
+  $$AccountabilityPartnersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteId => $composableBuilder(
+    column: $table.remoteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contact => $composableBuilder(
+    column: $table.contact,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AccountabilityPartnersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AccountabilityPartnersTable> {
+  $$AccountabilityPartnersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteId =>
+      $composableBuilder(column: $table.remoteId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get contact =>
+      $composableBuilder(column: $table.contact, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$AccountabilityPartnersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AccountabilityPartnersTable,
+          AccountabilityPartner,
+          $$AccountabilityPartnersTableFilterComposer,
+          $$AccountabilityPartnersTableOrderingComposer,
+          $$AccountabilityPartnersTableAnnotationComposer,
+          $$AccountabilityPartnersTableCreateCompanionBuilder,
+          $$AccountabilityPartnersTableUpdateCompanionBuilder,
+          (
+            AccountabilityPartner,
+            BaseReferences<
+              _$AppDatabase,
+              $AccountabilityPartnersTable,
+              AccountabilityPartner
+            >,
+          ),
+          AccountabilityPartner,
+          PrefetchHooks Function()
+        > {
+  $$AccountabilityPartnersTableTableManager(
+    _$AppDatabase db,
+    $AccountabilityPartnersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AccountabilityPartnersTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$AccountabilityPartnersTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$AccountabilityPartnersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> contact = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => AccountabilityPartnersCompanion(
+                id: id,
+                remoteId: remoteId,
+                name: name,
+                contact: contact,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String?> remoteId = const Value.absent(),
+                required String name,
+                Value<String?> contact = const Value.absent(),
+                required DateTime createdAt,
+              }) => AccountabilityPartnersCompanion.insert(
+                id: id,
+                remoteId: remoteId,
+                name: name,
+                contact: contact,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AccountabilityPartnersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AccountabilityPartnersTable,
+      AccountabilityPartner,
+      $$AccountabilityPartnersTableFilterComposer,
+      $$AccountabilityPartnersTableOrderingComposer,
+      $$AccountabilityPartnersTableAnnotationComposer,
+      $$AccountabilityPartnersTableCreateCompanionBuilder,
+      $$AccountabilityPartnersTableUpdateCompanionBuilder,
+      (
+        AccountabilityPartner,
+        BaseReferences<
+          _$AppDatabase,
+          $AccountabilityPartnersTable,
+          AccountabilityPartner
+        >,
+      ),
+      AccountabilityPartner,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -8736,4 +9397,9 @@ class $AppDatabaseManager {
       $$AppUsageLimitsTableTableManager(_db, _db.appUsageLimits);
   $$AnchorEventsTableTableManager get anchorEvents =>
       $$AnchorEventsTableTableManager(_db, _db.anchorEvents);
+  $$AccountabilityPartnersTableTableManager get accountabilityPartners =>
+      $$AccountabilityPartnersTableTableManager(
+        _db,
+        _db.accountabilityPartners,
+      );
 }
