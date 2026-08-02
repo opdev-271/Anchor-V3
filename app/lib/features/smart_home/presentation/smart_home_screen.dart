@@ -125,6 +125,9 @@ class _SignInCardState extends ConsumerState<_SignInCard> {
               decoration: InputDecoration(
                 labelText: 'Heslo',
                 suffixIcon: IconButton(
+                  // Bez popisku by odečítač přečetl jen „tlačítko" a uživatel
+                  // by nevěděl, co dělá.
+                  tooltip: _obscure ? 'Zobrazit heslo' : 'Skrýt heslo',
                   icon: Icon(
                     _obscure ? Icons.visibility : Icons.visibility_off,
                   ),

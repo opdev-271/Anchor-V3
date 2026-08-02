@@ -4,7 +4,7 @@ import '../../../core/storage/database.dart';
 import '../../../core/storage/enums.dart';
 import '../../blocking/application/blocking_providers.dart';
 import '../../focus_session/application/focus_providers.dart';
-import '../../privacy/application/privacy_providers.dart';
+import '../../privacy/domain/consent.dart';
 
 final appLimitsProvider = StreamProvider<List<AppUsageLimit>>((ref) {
   return ref.watch(databaseProvider).watchAppLimits();
@@ -50,16 +50,25 @@ class AppLimitsController {
   Future<void> syncToNative() => _syncToNative();
 
   Future<void> _syncToNative() async {
-    // Bez souhlasu s kategorií „čas v aplikacích" se do nativní vrstvy
-    // nepropisuje nic (docs/spec.md §9). Pojistka navíc: odvolání souhlasu
-    // limity samo maže, ale tenhle sync běží i při startu aplikace a nesmí
-    // je vzkřísit, kdyby v databázi něco zbylo.
-    if (!_ref.read(consentGrantedProvider(ConsentCategory.usageStats))) {
+    final db = _ref.read(databaseProvider);
+
+    // Souhlas se čte **přímo z databáze**, ne z `consentGrantedProvider`.
+    //
+    // Ten provider staví na streamu a dokud nedorazí první hodnota, hlásí
+    // „nesouhlas" — pro UI je to správně (nic nezobrazovat, dokud nevíme),
+    // ale tady by to bylo destruktivní: sync běží i při startu aplikace,
+    // takže by při každém studeném startu předběhl načtení streamu, dostal
+    // „nesouhlas" a smazal uživateli limity z nativní vrstvy.
+    //
+    // Přesně to se stalo a projevilo se to až měřením na emulátoru: databáze
+    // dva limity měla, `kotva_limits` bylo prázdné. U zápisu, který data
+    // ničí, nesmí „ještě nevím" znamenat „odvoláno".
+    if (!isConsentGranted(await db.allConsents(), ConsentCategory.usageStats)) {
       await _ref.read(blockingChannelProvider).saveAppLimits(const []);
       return;
     }
 
-    final limits = await _ref.read(databaseProvider).allAppLimits();
+    final limits = await db.allAppLimits();
     await _ref.read(blockingChannelProvider).saveAppLimits(
           limits
               .map(

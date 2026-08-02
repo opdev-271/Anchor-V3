@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/design_system/app_theme.dart';
 import 'features/focus_session/presentation/dashboard_screen.dart';
+import 'features/onboarding/application/onboarding_providers.dart';
+import 'features/onboarding/presentation/onboarding_screen.dart';
 import 'features/settings/application/settings_providers.dart';
 
 Future<void> main() async {
@@ -40,7 +42,12 @@ class KotvaApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const DashboardScreen(),
+      // Onboarding je jen při prvním spuštění. Přepíná se stavem, ne navigací,
+      // aby po jeho dokončení nezůstal v zásobníku a nešlo se do něj vrátit
+      // tlačítkem zpět.
+      home: ref.watch(onboardingCompletedProvider)
+          ? const DashboardScreen()
+          : const OnboardingScreen(),
     );
   }
 }

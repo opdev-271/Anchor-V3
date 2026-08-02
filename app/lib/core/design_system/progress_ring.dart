@@ -16,6 +16,7 @@ class ProgressRing extends StatelessWidget {
     required this.value,
     required this.child,
     this.size = 280,
+    this.semanticLabel,
   });
 
   /// 0.0 → 1.0.
@@ -23,18 +24,31 @@ class ProgressRing extends StatelessWidget {
   final Widget child;
   final double size;
 
+  /// Co prstenec znamená, pro odečítač obrazovky.
+  ///
+  /// Samotný oblouk je kreslený na plátno, takže z něj TalkBack nepřečte nic —
+  /// uživateli by zbyl jen čas uprostřed, bez informace, jak daleko blok je.
+  /// Procenta doplní widget sám, popisek dodává kontext.
+  final String? semanticLabel;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(
-        painter: _RingPainter(
-          value: value.clamp(0.0, 1.0),
-          trackColor: theme.colorScheme.surfaceContainerHighest,
+    final clamped = value.clamp(0.0, 1.0);
+
+    return Semantics(
+      label: semanticLabel,
+      value: '${(clamped * 100).round()} %',
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(
+          painter: _RingPainter(
+            value: clamped,
+            trackColor: theme.colorScheme.surfaceContainerHighest,
+          ),
+          child: Center(child: child),
         ),
-        child: Center(child: child),
       ),
     );
   }

@@ -6,6 +6,7 @@ import '../../accountability/presentation/partners_screen.dart';
 import '../../anchor/presentation/anchors_screen.dart';
 import '../../app_limits/presentation/app_limits_screen.dart';
 import '../../blocking/presentation/blocked_lists_screen.dart';
+import '../../onboarding/presentation/onboarding_screen.dart';
 import '../../privacy/presentation/privacy_screen.dart';
 import '../../screen_time/presentation/screen_time_screen.dart';
 import '../../smart_home/presentation/smart_home_screen.dart';
@@ -111,6 +112,17 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const BlockedListsScreen()),
+            ),
+          ),
+          const Divider(),
+
+          ListTile(
+            leading: const Icon(Icons.school_outlined),
+            title: const Text('Projít úvodní seznámení znovu'),
+            subtitle: const Text('Co Kotva umí, co ne a jaká chce oprávnění'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const OnboardingScreen()),
             ),
           ),
           const Divider(),

@@ -29,7 +29,8 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 6 — Smart home (TP-Link Kasa) | ✅ kód hotový, spínání reálné zásuvky **neověřeno** — viz [smart-home.md](smart-home.md) |
 | 7 — Accountability | ✅ lokální část hotová, sdílení mezi zařízeními čeká na backend — viz [accountability.md](accountability.md) |
 | 8 — Soukromí a nastavení | ✅ hotovo (bez cloudové části — není backend) — viz [privacy.md](privacy.md) |
-| 9–10 | ⬜ neotevřeno |
+| 9 — Onboarding a polish | ✅ hotovo — viz [onboarding.md](onboarding.md), [accessibility.md](accessibility.md), [battery.md](battery.md) |
+| 10 — Akceptační průchod | ⬜ neotevřeno |
 
 ### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
 
@@ -172,11 +173,16 @@ Podrobnosti a rozhodnutí: [privacy.md](privacy.md).
 
 ## Sprint 9 — Onboarding a polish
 
-- Onboarding vysvětluje **všechna** oprávnění před jejich vyžádáním (Usage Stats/Screen Time,
+- ✅ Onboarding vysvětluje **všechna** oprávnění před jejich vyžádáním (Usage Stats/Screen Time,
   Real World Lock ukázka, výběr první kotvy) — mandát §8, ne až po instalaci.
-- Přístupnost: dynamické písmo, VoiceOver/TalkBack, kontrast WCAG AA.
-- Battery profiling BLE scanningu a usage trackingu — cíl pod 3 % denní spotřeby (§13).
-- Ověření offline režimu (session i blokování appek funguje bez internetu, sync po obnovení).
+  Sám o žádné nežádá; o svolení si říká až funkce — viz [onboarding.md](onboarding.md).
+- ✅ Přístupnost: dynamické písmo, TalkBack, kontrast WCAG AA. Měření odhalilo **tři páry
+  barev, které propadaly** — viz [accessibility.md](accessibility.md).
+- ✅ Battery profiling BLE scanningu a usage trackingu — obojí hluboko pod cílem 3 %.
+  Skutečný odběr v mA změřit na emulátoru nejde, viz [battery.md](battery.md).
+- ✅ Ověření offline režimu — session i blokování appek fungují bez internetu.
+  ⬜ Sync po obnovení ověřit nejde, dokud není backend.
+- ⬜ VoiceOver (iOS) — čeká na prostředí s Xcode spolu se zbytkem iOS vrstvy.
 
 ## Sprint 10 — Akceptační průchod
 

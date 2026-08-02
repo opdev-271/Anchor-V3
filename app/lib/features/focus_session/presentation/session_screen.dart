@@ -136,6 +136,7 @@ class _ActiveView extends ConsumerWidget {
           const Spacer(),
           ProgressRing(
             value: progress.fraction,
+            semanticLabel: 'Průběh bloku',
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -263,7 +264,13 @@ class _ClosingView extends StatelessWidget {
           Icon(
             completed ? Icons.anchor : Icons.water,
             size: 72,
-            color: completed ? AppColors.completed : AppColors.interrupted,
+            // Tmavý režim má vlastní odstín „dokončeno" — ten světlý na něm
+            // dá jen 3.01:1, tedy přesně na hraně (viz app_colors.dart).
+            color: completed
+                ? (theme.brightness == Brightness.dark
+                    ? AppColors.completedDark
+                    : AppColors.completed)
+                : AppColors.interrupted,
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(

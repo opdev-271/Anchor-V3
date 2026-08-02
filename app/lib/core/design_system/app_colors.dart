@@ -20,6 +20,15 @@ abstract final class AppColors {
   /// Mělčina — světlejší akcent pro průběh a zvýraznění.
   static const shallow = Color(0xFF2A9D8F);
 
+  /// Primární barva pro tmavý režim.
+  ///
+  /// Proč nestačí [shallow]: na tmavém povrchu má poměr 4.42:1, což je těsně
+  /// **pod** hranicí 4.5:1, kterou WCAG AA žádá pro běžný text. Popisky sekcí
+  /// primární barvou přitom běžný text jsou (14 sp), takže by propadaly.
+  /// Tenhle odstín je o kousek světlejší a dá 5.10:1. Hlídá to
+  /// `test/contrast_test.dart`.
+  static const anchorDark = Color(0xFF35A99A);
+
   // --- Povrchy ---
   static const sandLight = Color(0xFFF6F4EF);
   static const surfaceLight = Color(0xFFFFFFFF);
@@ -33,6 +42,11 @@ abstract final class AppColors {
   /// Dokončená session.
   static const completed = anchor;
 
+  /// Dokončená session v tmavém režimu — [anchor] na tmavém povrchu dá 3.01:1,
+  /// tedy přesně na hraně prahu pro ikony. Světlejší odstín dělá z „těsně
+  /// prošlo" čitelný prvek.
+  static const completedDark = anchorDark;
+
   /// Probíhající session.
   static const active = shallow;
 
@@ -43,6 +57,14 @@ abstract final class AppColors {
   /// Jediné legitimní použití červené: destruktivní akce uživatele
   /// (smazání dat dle §9), nikdy hodnocení jeho chování.
   static const destructive = Color(0xFFB3261E);
+
+  /// Destruktivní barva pro tmavý režim.
+  ///
+  /// [destructive] je laděná na světlé pozadí a na tmavém povrchu dá jen
+  /// 2.25:1 — propadá i mírnějšímu prahu 3:1 pro netextové prvky. Text
+  /// „Smazat všechna data" tím byl v tmavém režimu hůř čitelný než zbytek
+  /// obrazovky, což je u nevratné akce přesně obráceně, než má být.
+  static const destructiveDark = Color(0xFFE5877F);
 
   /// Přechod pro nosné plochy — hero karta na přehledu, prstenec odpočtu.
   ///

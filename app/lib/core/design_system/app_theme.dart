@@ -10,8 +10,11 @@ import 'app_typography.dart';
 ///  - podpora dynamického písma → nikde nepoužíváme pevnou velikost textu bez
 ///    respektování `MediaQuery.textScaler` (Flutter to dělá automaticky, pokud
 ///    nepřepíšeme `textScaleFactor`; proto ho nepřepisujeme nikde v aplikaci),
-///  - kontrast WCAG AA → páry barev níže jsou voleny na poměr ≥ 4.5:1 pro
-///    běžný text a ≥ 3:1 pro velký text a nosné prvky UI,
+///  - kontrast WCAG AA → ≥ 4.5:1 pro běžný text a ≥ 3:1 pro ikony a nosné prvky.
+///    **Ověřuje to `test/contrast_test.dart`**, ne jen tenhle komentář: při
+///    prvním skutečném změření propadly tři páry, u kterých tu dřív stálo, že
+///    vyhovují. Tmavý režim proto má vlastní varianty primární, destruktivní
+///    a „dokončeno" barvy — odstín vyladěný na světlé pozadí na tmavém neplatí,
 ///  - dotykové cíle ≥ 48 dp ([AppSpacing.minTouchTarget]).
 ///
 /// Vizuální jazyk (revize Anchor-V1 — „modernější a elegantnější"):
@@ -40,10 +43,10 @@ abstract final class AppTheme {
       seedColor: AppColors.anchor,
       brightness: Brightness.dark,
     ).copyWith(
-      primary: AppColors.shallow,
+      primary: AppColors.anchorDark,
       surface: AppColors.surfaceDarkElevated,
       onSurface: AppColors.inkDark,
-      error: AppColors.destructive,
+      error: AppColors.destructiveDark,
     );
     return _base(scheme, AppColors.surfaceDark);
   }

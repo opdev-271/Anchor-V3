@@ -86,6 +86,23 @@ void main() {
     });
   });
 
+  group('načítání souhlasu nesmí vypadat jako odvolání', () {
+    test('prázdný seznam a odvolaný souhlas se nedají odlišit — proto se '
+        'na stav ptáme až načtených dat', () {
+      // Regrese ze Sprintu 8: startovní sync limitů četl souhlas z providera
+      // nad streamem. Než stream stihl vydat první hodnotu, hlásil „nesouhlas"
+      // a sync smazal uživateli limity z nativní vrstvy.
+      //
+      // Zdrojem pravdy je proto `allConsents()` z databáze, ne stream. Tenhle
+      // test drží tvrzení, na kterém to stojí: z prázdného seznamu **nejde**
+      // poznat, jestli uživatel souhlas nedal, nebo se jen ještě nenačetl.
+      expect(isConsentGranted(const [], ConsentCategory.usageStats), isFalse);
+
+      final granted = [_record(ConsentCategory.usageStats, grantedAt: t0)];
+      expect(isConsentGranted(granted, ConsentCategory.usageStats), isTrue);
+    });
+  });
+
   group('texty souhlasů (§8)', () {
     test('každá kategorie má vysvětlení, tok dat i důsledek odvolání', () {
       // §8 chce vysvětlení **před** vyžádáním. Prázdný text by znamenal
