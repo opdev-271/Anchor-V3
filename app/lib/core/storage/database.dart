@@ -425,12 +425,22 @@ class AppDatabase extends _$AppDatabase {
     required String externalDeviceId,
     required String name,
   }) {
-    return into(smartDevices).insertOnConflictUpdate(
+    return into(smartDevices).insert(
       SmartDevicesCompanion.insert(
         provider: provider,
         externalDeviceId: externalDeviceId,
         name: name,
         createdAt: DateTime.now(),
+      ),
+      // Cíl konfliktu ručně — ze stejného důvodu jako u [upsertAppLimit].
+      // Bez něj by uložení už známého zařízení spadlo na unikátní dvojici
+      // poskytovatel + ID místo toho, aby přepsalo jeho název.
+      //
+      // `createdAt` se schválně nepřepisuje: je to datum prvního propojení
+      // zařízení, ne datum poslední aktualizace jeho jména.
+      onConflict: DoUpdate(
+        (_) => SmartDevicesCompanion(name: Value(name)),
+        target: [smartDevices.provider, smartDevices.externalDeviceId],
       ),
     );
   }
@@ -462,12 +472,22 @@ class AppDatabase extends _$AppDatabase {
     required String tagIdentifier,
     required String name,
   }) {
-    return into(anchorPoints).insertOnConflictUpdate(
+    return into(anchorPoints).insert(
       AnchorPointsCompanion.insert(
         type: type,
         tagIdentifier: tagIdentifier,
         name: name,
         createdAt: DateTime.now(),
+      ),
+      // Cíl konfliktu ručně — ze stejného důvodu jako u [upsertAppLimit].
+      // Bez něj by opětovné spárování téže kotvy spadlo místo toho, aby jí
+      // jen změnilo jméno a typ.
+      onConflict: DoUpdate(
+        (_) => AnchorPointsCompanion(
+          type: Value(type),
+          name: Value(name),
+        ),
+        target: [anchorPoints.tagIdentifier],
       ),
     );
   }
@@ -543,13 +563,31 @@ class AppDatabase extends _$AppDatabase {
     required int dailyMinutes,
     required LimitIntensity intensity,
   }) {
-    return into(appUsageLimits).insertOnConflictUpdate(
+    final now = DateTime.now();
+    return into(appUsageLimits).insert(
       AppUsageLimitsCompanion.insert(
         packageName: packageName,
         appLabel: appLabel,
         dailyMinutes: dailyMinutes,
         intensity: intensity,
-        updatedAt: DateTime.now(),
+        updatedAt: now,
+      ),
+      // `insertOnConflictUpdate` tady **nefunguje**: cílí na primární klíč
+      // (`ON CONFLICT("id")`), jenže `id` je autoIncrement a nikdy nekoliduje.
+      // Skutečná kolize nastane na unikátním `packageName`, kterou pak SQLite
+      // nemá jak vyřešit a vyhodí `UNIQUE constraint failed`.
+      //
+      // Projevovalo se to tak, že **založit limit šlo, ale změnit už ne** —
+      // úprava intenzity nebo počtu minut tiše spadla a uživateli zůstala
+      // původní hodnota. Cíl konfliktu proto musíme uvést ručně.
+      onConflict: DoUpdate(
+        (_) => AppUsageLimitsCompanion(
+          appLabel: Value(appLabel),
+          dailyMinutes: Value(dailyMinutes),
+          intensity: Value(intensity),
+          updatedAt: Value(now),
+        ),
+        target: [appUsageLimits.packageName],
       ),
     );
   }

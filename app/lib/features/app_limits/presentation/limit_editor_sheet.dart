@@ -105,13 +105,30 @@ class _LimitEditorSheetState extends ConsumerState<LimitEditorSheet> {
     );
   }
 
+  /// Uloží limit a zavře sheet.
+  ///
+  /// Selhání se **musí** dostat na obrazovku. Původně tu žádné odchycení
+  /// nebylo a zápis, který spadl na chybu v databázi, se navenek projevil jen
+  /// tím, že sheet zůstal otevřený — uživatel netušil, jestli se uložilo, nebo
+  /// ne, a změna limitu tiše mizela. Tichý neúspěch je u nastavení, které má
+  /// něco vynucovat, horší než hláška.
   Future<void> _save() async {
-    await ref.read(appLimitsControllerProvider).save(
-          packageName: widget.packageName,
-          appLabel: widget.appLabel,
-          dailyMinutes: _minutes.round(),
-          intensity: _intensity,
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    try {
+      await ref.read(appLimitsControllerProvider).save(
+            packageName: widget.packageName,
+            appLabel: widget.appLabel,
+            dailyMinutes: _minutes.round(),
+            intensity: _intensity,
+          );
+      navigator.pop();
+    } catch (e) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Limit se nepodařilo uložit: $e')),
         );
-    if (mounted) Navigator.of(context).pop();
+    }
   }
 }
