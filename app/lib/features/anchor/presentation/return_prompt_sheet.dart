@@ -95,11 +95,20 @@ class _ReturnPromptSheetState extends ConsumerState<ReturnPromptSheet> {
   }
 
   Future<void> _save(String? text) async {
-    await ref.read(databaseProvider).recordReturn(
-          widget.absence.id,
-          reflectionText: (text == null || text.isEmpty) ? null : text,
-        );
-    ref.read(openAbsenceProvider.notifier).state = null;
+    // Notifier se čte **předem**, ne až po zápisu do databáze. Uživatel může
+    // sheet zavřít, zatímco zápis běží; `ref` pak patří odstraněnému widgetu
+    // a sáhnout na něj skončí chybou. Notifier ale žije v ProviderScope, ne ve
+    // widgetu, takže přes await bezpečně přežije — a hlavně: úklid otevřené
+    // nepřítomnosti musí proběhnout i tak, jinak by se dotaz objevil znovu.
+    final openAbsence = ref.read(openAbsenceProvider.notifier);
+    final db = ref.read(databaseProvider);
+
+    await db.recordReturn(
+      widget.absence.id,
+      reflectionText: (text == null || text.isEmpty) ? null : text,
+    );
+    openAbsence.state = null;
+
     if (mounted) Navigator.of(context).pop();
   }
 }

@@ -109,11 +109,21 @@ class _BlePairingState extends ConsumerState<_BlePairing> {
     unawaited(_scan());
   }
 
+  /// Zjistí stav Bluetooth, případně si řekne o oprávnění, a proskenuje okolí.
+  ///
+  /// Po **každém** `await` se kontroluje [mounted]. Není to opatrnost navíc:
+  /// uživatel může sheet zavřít kdykoliv — a čeká se tu na systémový dialog
+  /// o oprávnění, který nemá žádný časový strop. Sáhnout pak na `setState`
+  /// nebo `ref` znamená pracovat s widgetem, který už neexistuje, což Flutter
+  /// ohlásí jako `_lifecycleState != defunct` a shodí to celý snímek.
   Future<void> _scan() async {
     final channel = ref.read(anchorChannelProvider);
     final status = await channel.bleStatus();
+    if (!mounted) return;
+
     if (!status.permitted) {
       await channel.requestBlePermission();
+      if (!mounted) return;
       ref.invalidate(bleStatusProvider);
       return;
     }
@@ -121,12 +131,12 @@ class _BlePairingState extends ConsumerState<_BlePairing> {
 
     setState(() => _scanning = true);
     final devices = await channel.scanOnce();
-    if (mounted) {
-      setState(() {
-        _devices = devices;
-        _scanning = false;
-      });
-    }
+    if (!mounted) return;
+
+    setState(() {
+      _devices = devices;
+      _scanning = false;
+    });
   }
 
   @override
@@ -151,6 +161,8 @@ class _BlePairingState extends ConsumerState<_BlePairing> {
         actionLabel: status.supported && !status.permitted ? 'Povolit' : null,
         onAction: () async {
           await ref.read(anchorChannelProvider).requestBlePermission();
+          // Sheet mohl mezitím zmizet — viz poznámka u [_scan].
+          if (!mounted) return;
           ref.invalidate(bleStatusProvider);
         },
       );
@@ -209,6 +221,7 @@ class _BlePairingState extends ConsumerState<_BlePairing> {
     final name = await _promptForName(context, initial: device.displayName);
     if (name == null || name.isEmpty || !mounted) return;
 
+    // `ref` se drží widgetu, takže i tenhle zápis musí být za kontrolou výše.
     await ref.read(databaseProvider).createAnchor(
           type: AnchorType.ble,
           tagIdentifier: device.address,

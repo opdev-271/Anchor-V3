@@ -226,7 +226,7 @@ class _PrivacyScreenState extends ConsumerState<PrivacyScreen>
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
 
     setState(() => _busy = true);
     try {
