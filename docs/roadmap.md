@@ -30,7 +30,7 @@ není vynechaný, jen odložený. Ostatní kritéria jdou splnit na Androidu nez
 | 7 — Accountability | ✅ lokální část hotová, sdílení mezi zařízeními čeká na backend — viz [accountability.md](accountability.md) |
 | 8 — Soukromí a nastavení | ✅ hotovo (bez cloudové části — není backend) — viz [privacy.md](privacy.md) |
 | 9 — Onboarding a polish | ✅ hotovo — viz [onboarding.md](onboarding.md), [accessibility.md](accessibility.md), [battery.md](battery.md) |
-| 10 — Akceptační průchod | ⬜ neotevřeno |
+| 10 — Akceptační průchod | ✅ proběhl — 4 kritéria splněná, 2 částečně, 1 neověřené: [acceptance.md](acceptance.md) |
 
 ### Revize Anchor-V1 (`Kotva_V1_co_predelat.docx`)
 
@@ -189,6 +189,14 @@ Podrobnosti a rozhodnutí: [privacy.md](privacy.md).
 Projít [§14 checklist](spec.md#14-akceptační-kritéria-definition-of-done-pro-mvp) bod po bodu se
 skutečnými zařízeními (Android + iOS), ne jen simulátory, kvůli platformním oprávněním ze
 Sprintu 2 a 5.
+
+**Proběhlo 4. 8. 2026 — výsledek v [acceptance.md](acceptance.md).** Čtyři kritéria splněná,
+dvě částečně (iOS, doručení parťákovi), jedno neověřené (zásuvka Kasa). Průchod odhalil
+a opravil jednu vadu v textu zprávy parťákovi.
+
+Průchod běžel na emulátoru Pixel_4, ne na fyzickém telefonu — požadavek „skutečná zařízení"
+tedy zůstává nesplněný u toho, co emulátor neumí: BLE kotva, spínání zásuvky a měření
+spotřeby v mA. Denní limity a blokace se na emulátoru ověřit daly a ověřené jsou.
 
 ## Monetizace ([§12](spec.md#12-monetizace))
 

@@ -108,6 +108,18 @@ void main() {
       expect(message, contains('50 minut'));
     });
 
+    test('u bloku kratšího než minuta se o délce mlčí', () {
+      // Nález z akceptačního průchodu (Sprint 10): blok ukončený po 59 s
+      // hlásil „0 minut práce se ale počítá". Vyznělo to posměšně, tedy přesně
+      // opačně, než §11 chce. Nula minut není co hlásit.
+      for (final status in [SessionStatus.completed, SessionStatus.interrupted]) {
+        final message = composePartnerMessage(
+          partnerUpdateFor(_session(status: status, workedMinutes: 0)),
+        );
+        expect(message, isNot(contains('0 minut')), reason: status.name);
+      }
+    });
+
     test('minuty se skloňují', () {
       String msg(int m) => composePartnerMessage(
             partnerUpdateFor(

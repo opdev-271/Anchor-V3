@@ -81,10 +81,19 @@ String composePartnerMessage(PartnerUpdate update, {String? senderName}) {
     many: 'minut',
   );
 
+  // Blok kratší než minuta má nula odpracovaných minut a věta „0 minut práce
+  // se ale počítá" pak zní posměšně — přesně opačně, než §11 chce. V takovém
+  // případě se o délce mlčí; není co hlásit.
+  final noWholeMinutes = update.workedMinutes == 0;
+
   final body = switch (update.status) {
     PartnerStatus.working =>
       'Právě mám fokus blok. Ozvu se, až doběhne.',
+    PartnerStatus.finished when noWholeMinutes =>
+      'Fokus blok hotový.',
     PartnerStatus.finished => 'Fokus blok hotový — $minutes práce.',
+    PartnerStatus.endedEarly when noWholeMinutes =>
+      'Fokus blok jsem ukončil/a dřív.',
     PartnerStatus.endedEarly =>
       'Fokus blok jsem ukončil/a dřív. $minutes práce se ale počítá.',
   };
