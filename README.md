@@ -52,3 +52,4 @@ Návod na spuštění a testování je v [app/README.md](app/README.md).
 Aplikace nikdy neobviňuje uživatele za selhání a nesnaží se ho uvěznit — předčasné ukončení
 bloku je vždy možné, jen se zpomalí, aby se přerušil impulz. Data o používání aplikací se
 zpracovávají na zařízení. Podrobně v [docs/spec.md §9 a §11](docs/spec.md).
+# Anchor-V3
